@@ -1,0 +1,28 @@
+teams:
+  member-limit: 5
+  name:
+    maximum: 10
+    minimum: 3
+  allies:
+    enabled: true
+    maximum: 1
+  cooldowns:
+    commands: 3
+    home: 5
+    warp: 5
+  chest:
+    hologram:
+      - '&c&l{TEAM}s Claim Chest'
+      - ''
+      - '&fShield Status: &c{SHIELD-STATUS}'
+      - '&fDurability: &c{DURABILITY}'
+    item:
+      material: CHEST
+      name: '&c&lCLAIM CHEST'
+      lore:
+        - ''
+        - '&7Place this claim chest to create a team'
+        - '&7and create a claim!'
+        - ''
+        - '&c&lRIGHT CLICK &cto claim land!'
+      glow: true

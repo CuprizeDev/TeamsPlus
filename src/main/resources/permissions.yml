@@ -1,0 +1,26 @@
+permissions:
+  default:
+    MEMBER:
+      commands:
+        find-chest: true
+        home: true
+        promote: false
+        demote: false
+        ally: false
+        invite: false
+        logs: false
+        name: false
+        warp: true
+        disband: false
+        setwarp: false
+      actions:
+        destroy: true
+        build: true
+        container: true
+        chest: false
+        territory: false
+        upgrade: false
+        door: true
+        interact: true
+    OFFICER:
+    CO_LEADER:

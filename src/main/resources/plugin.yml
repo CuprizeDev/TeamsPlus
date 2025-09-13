@@ -1,0 +1,9 @@
+name: TeamsPlus
+version: '1.0.0'
+main: com.vitaldev.teamsplus.TeamsPlus
+api-version: '1.13'
+depend:
+  - PlaceholderAPI
+  - DecentHolograms
+soft-depend:
+  - LifestealPlus
