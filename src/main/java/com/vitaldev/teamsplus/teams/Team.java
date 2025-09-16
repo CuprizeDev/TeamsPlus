@@ -32,12 +32,12 @@ public class Team {
     private final Hologram hologram;
     private final List<UUID> invites = new LinkedList<>();
     private final UUID uuid;
-    private int power;
+    private int power = 0;
     private final Location claimChest;
     public TeamsPlus plugin;
     public final ConfigHandler configHandler;
-    private boolean shieldStatus;
-    int durability;
+    private boolean shieldStatus = false;
+    int durability = 5;
     private Map<String, Long> cooldowns = new HashMap<>();
     private Map<UpgradeType, Integer> upgrades = new HashMap<>();
 

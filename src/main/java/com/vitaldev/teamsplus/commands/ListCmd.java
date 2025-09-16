@@ -26,7 +26,7 @@ public class ListCmd extends SubCmd {
 
         ConfigHandler langHandler = this.plugin.getLangFile();
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             ConsoleUtil.sendMessage(langHandler.getMessage("messages.only-players"));
             return;
         }
@@ -45,14 +45,23 @@ public class ListCmd extends SubCmd {
                 .toList();
 
 
-        for (int i = 0; i < listPage*9; i++) {
+        player.sendMessage(langHandler.getMessage("messages.list.header")
+                .replace("{PAGE-COUNT}", String.valueOf((sortedTeams.size()/9)+1))
+                .replace("{PAGE-NUMBER}", String.valueOf(listPage)));
+
+        for (int i = sortedTeams.size()/9; i < listPage*9; i++) {
 
             if (sortedTeams.size() <= i) {
                 return;
             }
 
-            Bukkit.broadcastMessage("Team: " + sortedTeams.get(i).getTeamName());
-        }
+            Team team = sortedTeams.get(i);
 
+            player.sendMessage(langHandler.getMessage("messages.list.message")
+                    .replace("{TEAM}", team.getTeamName())
+                    .replace("{ONLINE}", String.valueOf(team.getOnlineMemberCount()))
+                    .replace("{MEMBERS}", String.valueOf(team.getMembers().size()))
+                    .replace("{POWER}", String.valueOf(team.getPower())));
+        }
     }
 }
