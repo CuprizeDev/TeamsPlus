@@ -108,6 +108,7 @@ public final class TeamsPlus extends JavaPlugin {
         teamCommand.registerSubCommand(new ChatCmd(this));
         teamCommand.registerSubCommand(new InfoCmd(this));
         teamCommand.registerSubCommand(new ListCmd(this));
+        teamCommand.registerSubCommand(new LocationCmd(this));
 
         // Dependencies
 

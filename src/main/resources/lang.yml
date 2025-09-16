@@ -9,6 +9,8 @@ messages:
   not-in-team: '&8[&5&l!&8] &cThis player is not in your team!'
   disband: '&8[&5&l!&8] &cYou have disbanded your team!'
   already-in-team: '&8[&5&l!&8] &cYou are already in a team! You cannot run that command!'
+  location:
+    team-message: '&8[&5&l!&8] &7{PLAYER}s Location: {WORLD}, {X}, {Y}, {Z}'
   chat:
     enabled: '&8[&5&l!&8] &aYou have enabled team chat!'
     disabled: '&8[&5&l!&8] &cYou have disabled team chat!'
