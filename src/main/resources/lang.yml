@@ -106,8 +106,8 @@ messages:
     find: '&8[&5&l!&8] &7Chest Location: &5{X}x, {Y}y, {Z}z'
     must-place: '&8[&5&l!&8] &cYou must place a claim chest to create a team!'
   list:
-    header: '&7&m----------&r&7[ &2Team List {pagenumber}&7/&2{pagecount} &7]&m----------'
-    message: '&2{team} &2{online} / {members} online, &7Land / Power / Maxpower: &6{chunks}/{power}/{maxPower}'
+    header: '&7&m----------&r&7[ &2Team List {PAGE-NUMBER}&7/&2{PAGE-COUNT} &7]&m----------'
+    message: '&2{TEAM} &7- {ONLINE} / {MEMBERS} online, {POWER} power'
   info:
     team-message:
       - '&8&m----------&r&8< {TEAM} &7[{ONLINE}/{TOTAL} &8>&m----------'
