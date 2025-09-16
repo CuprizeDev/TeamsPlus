@@ -4,12 +4,14 @@ import com.google.gson.*;
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.teams.PlayerRank;
 import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.teams.UpgradeType;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.*;
+import java.util.Map;
 import java.util.UUID;
 
 public class TeamData {
@@ -99,6 +101,14 @@ public class TeamData {
         claimChestObject.addProperty("z", claimChestLoc.getBlockZ());
         teamData.add("claimChest", claimChestObject);
 
+        // Upgrades
+
+        JsonObject upgradesObject = new JsonObject();
+        for (Map.Entry<UpgradeType, Integer> entry : team.getUpgrades().entrySet()) {
+            upgradesObject.addProperty(entry.getKey().getDisplayName(), entry.getValue());
+        }
+        teamData.add("upgrades", upgradesObject);
+
         File file = new File(plugin.getDataFolder(), "data/" + team.getTeamUUID().toString() + ".json");
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(teamData));
@@ -111,7 +121,7 @@ public class TeamData {
         File file = new File(plugin.getDataFolder(), "data/" + teamUUID.toString() + ".json");
 
         if (!file.exists()) {
-            return null; // Return null if the team file doesn't exist
+            return null;
         }
 
         try (FileReader reader = new FileReader(file)) {
@@ -199,10 +209,18 @@ public class TeamData {
                 team.addInvite(UUID.fromString(element.getAsString()));
             }
 
+            JsonObject upgradesObject = teamData.getAsJsonObject("upgrades");
+
+            if (upgradesObject != null) {
+                for (Map.Entry<String, JsonElement> entry : upgradesObject.entrySet()) {
+                    String upgradeName = entry.getKey();
+                    int value = entry.getValue().getAsInt();
+                    team.setUpgradeLevel(UpgradeType.valueOf(upgradeName), value);
+                }
+            }
+
         }  catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }

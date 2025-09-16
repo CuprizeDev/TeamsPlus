@@ -1,16 +1,20 @@
 package com.vitaldev.teamsplus.listeners;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.inventories.chest.ChestMenuInventory;
 import com.vitaldev.teamsplus.teams.Team;
 import com.vitaldev.teamsplus.util.TeamData;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.items.NBTHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -30,7 +34,26 @@ public class TeamChestListener implements Listener {
     @EventHandler
     public void onChestInteract(PlayerInteractEvent event) {
 
-        Player player = event.getPlayer();
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        Block block = event.getClickedBlock();
+
+        if (block == null) {
+            return;
+        }
+
+        if (block.getType() != Material.CHEST) {
+            return;
+        }
+
+        NBTHandler nbtHandler = new NBTHandler(plugin);
+
+        if (!nbtHandler.getBoolean(block, nbtHandler.getKey() + "claim_chest")){
+            return;
+        }
+
+        new ChestMenuInventory(plugin, event.getPlayer()).openInventory();
+        event.setCancelled(true);
 
 
     }
@@ -53,19 +76,19 @@ public class TeamChestListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        NBTHandler nbtUtil = new NBTHandler(this.plugin);
+        NBTHandler nbtHandler = new NBTHandler(plugin);
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         ItemStack offHand = player.getInventory().getItemInOffHand();
-        ConfigHandler langHandler = this.plugin.getLangFile();
-        TeamData teamData = new TeamData(this.plugin);
+        ConfigHandler langHandler = plugin.getLangFile();
+        TeamData teamData = new TeamData(plugin);
 
         if (offHand.getType() == Material.CHEST
-                && Boolean.TRUE.equals(nbtUtil.getBoolean(offHand, nbtUtil.getKey() + "claim_chest"))) {
+                && Boolean.TRUE.equals(nbtHandler.getBoolean(offHand, nbtHandler.getKey() + "claim_chest"))) {
             event.setCancelled(true);
             return;
         }
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR
-                && Boolean.TRUE.equals(nbtUtil.getBoolean(mainHand, nbtUtil.getKey() + "claim_chest"))) {
+                && Boolean.TRUE.equals(nbtHandler.getBoolean(mainHand, nbtHandler.getKey() + "claim_chest"))) {
 
             if (Team.hasTeam(player)) {
                 player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.chest.has-team")));
@@ -81,6 +104,7 @@ public class TeamChestListener implements Listener {
             player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.chest.placed")));
             Team team = new Team(plugin, player.getName() + "'s Team", player.getUniqueId(), UUID.randomUUID(), event.getBlockPlaced().getLocation());
             teamData.saveTeam(team);
+            nbtHandler.addBoolean(event.getBlockPlaced(), nbtHandler.getKey() + "claim_chest", true);
             Team.addUUID(team.getTeamUUID(), team);
         }
     }

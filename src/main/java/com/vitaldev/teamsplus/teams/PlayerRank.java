@@ -1,45 +1,42 @@
 package com.vitaldev.teamsplus.teams;
 
 public enum PlayerRank {
-    LEADER(3),
-    CO_LEADER(2),
-    OFFICER(1),
-    MEMBER(0);
+    LEADER("Leader", 3),
+    CO_LEADER("Co-Leader", 2),
+    OFFICER("Officer", 1),
+    MEMBER("Member", 0);
 
-    public final int value;
+    private final String displayName;
+    private final int value;
 
-    PlayerRank(int value) {
+    PlayerRank(String displayName, int value) {
+        this.displayName = displayName;
         this.value = value;
     }
 
-    public String getName(PlayerRank playerRank) {
-        if (playerRank == LEADER) {
-            return "leader";
-        }
-        if (playerRank == CO_LEADER) {
-            return "co-leader";
-        }
-        if (playerRank == OFFICER) {
-            return "officer";
-        }
-        return "member";
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public String getNameFromValue(int value) {
-        if (value == 3) {
-            return "leader";
-        }
-        if (value == 2) {
-            return "co-leader";
-        }
-        if (value == 1) {
-            return "officer";
-        }
-        return "member";
-    }
-
-    // Updated getValue method
     public int getValue() {
-        return this.value;
+        return value;
+    }
+
+    public static PlayerRank getRankFromValue(int value) {
+        for (PlayerRank rank : values()) {
+            if (rank.value == value) {
+                return rank;
+            }
+        }
+        return MEMBER;
+    }
+
+    public static PlayerRank getRankFromDisplayName(String name) {
+        for (PlayerRank rank : values()) {
+            if (rank.displayName.equalsIgnoreCase(name)) {
+                return rank;
+            }
+        }
+        return null;
     }
 }

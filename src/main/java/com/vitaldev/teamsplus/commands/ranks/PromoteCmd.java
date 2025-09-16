@@ -61,10 +61,10 @@ public class PromoteCmd extends SubCmd {
             team.promote(offlineTarget.getPlayer());
 
             player.sendMessage(langHandler.getMessage("messages.promote.sent")
-                    .replace("{RANK}", playerRank.getName(playerRank))
+                    .replace("{RANK}", playerRank.getDisplayName())
                     .replace("{PLAYER}", target.getName()));
             target.sendMessage(langHandler.getMessage("messages.promote.received")
-                    .replace("{RANK}", playerRank.getName(playerRank)));
+                    .replace("{RANK}", playerRank.getDisplayName()));
         } else {
 
             PlayerRank playerRank = team.getPlayerRank(target.getUniqueId());
@@ -94,12 +94,12 @@ public class PromoteCmd extends SubCmd {
                 return;
             }
 
+            team.promote(target);
             player.sendMessage(langHandler.getMessage("messages.promote.sent")
-                    .replace("{RANK}", playerRank.getNameFromValue(playerRank.value+1))
+                    .replace("{RANK}", playerRank.getDisplayName())
                     .replace("{PLAYER}", target.getName()));
             target.sendMessage(langHandler.getMessage("messages.promote.received")
-                    .replace("{RANK}", playerRank.getNameFromValue(playerRank.value+1)));
-            team.promote(target);
+                    .replace("{RANK}", playerRank.getDisplayName()));
         }
     }
 }

@@ -1,0 +1,73 @@
+upgrades:
+  menu:
+    title: '&8{TEAM} Upgrades'
+    size: 45
+    filler:
+      type: BORDER
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      amount: 1
+      lore:
+        - ""
+      glow: true
+    close:
+      material: BARRIER
+      name: "&c&lCLOSE"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    upgrades:
+      artifacts:
+        default: 1
+        levels:
+          1:
+            cost: 50000
+            effect: 1
+          2:
+            cost: 150000
+            effect: 2
+        item:
+          material: TOTEM_OF_UNDYING
+          name: "&c&lArtifacts Upgrade"
+          amount: 1
+          lore:
+            - ""
+          glow: false
+          slot: 20
+      durability:
+        default: 10
+        levels:
+          1:
+            cost: 50000
+            effect: 25
+          2:
+            cost: 250000
+            effect: 50
+        item:
+          material: OBSIDIAN
+          name: "&5&lDurability Upgrade"
+          amount: 1
+          lore:
+            - ""
+          glow: false
+          slot: 22
+      exp:
+        levels:
+          1:
+            cost: 50000
+            effect: 5
+          2:
+            cost: 150000
+            effect: 10
+          3:
+            cost: 250000
+            effect: 15
+        item:
+          material: EXPERIENCE_BOTTLE
+          name: "&e&lExperience Upgrade"
+          amount: 1
+          lore:
+            - ""
+          glow: false
+          slot: 24

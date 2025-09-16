@@ -21,7 +21,6 @@ import java.util.*;
 
 public class Team {
 
-
     private String teamName;
     private UUID leader;
     private final Set<UUID> members;
@@ -39,6 +38,9 @@ public class Team {
     public final ConfigHandler configHandler;
     private boolean shieldStatus;
     int durability;
+    private Map<String, Long> cooldowns = new HashMap<>();
+    private Map<UpgradeType, Integer> upgrades = new HashMap<>();
+
 
     public Team(TeamsPlus plugin, String teamName, UUID leader, UUID uuid, Location claimChestLocation) {
         this.teamName = teamName;
@@ -73,6 +75,53 @@ public class Team {
         addClaim(claimChestLocation.getChunk());
         addMember(leader, PlayerRank.LEADER);
         new FileUtil().createJsonFile(plugin, "data/" + getTeamUUID());
+    }
+
+    // Upgrades
+
+    public Map<UpgradeType, Integer> getUpgrades() {
+        return upgrades;
+    }
+
+    public int getUpgradeLevel(UpgradeType upgrade) {
+        return upgrades.get(upgrade);
+    }
+
+    public void setUpgradeLevel(UpgradeType upgrade, int level) {
+        upgrades.put(upgrade, level);
+    }
+
+    public void upgradeLevel(UpgradeType upgrade) {
+        upgrades.put(upgrade, upgrades.get(upgrade) + 1);
+    }
+
+    // Cooldowns
+
+    public Map<String, Long> getCooldowns() {
+        return cooldowns;
+    }
+
+    public void startCooldown(String action, long durationMillis) {
+        long expirationTime = System.currentTimeMillis() + durationMillis;
+        getCooldowns().put(action, expirationTime);
+    }
+
+
+    public boolean isOnCooldown(Team team, String action) {
+        Long expirationTime = team.getCooldowns().get(action);
+        if (expirationTime == null) {
+            return false;
+        }
+        return expirationTime > System.currentTimeMillis();
+    }
+
+    public long getRemainingCooldown(Team team, String action) {
+        Long expirationTime = team.getCooldowns().get(action);
+        if (expirationTime == null) {
+            return 0;
+        }
+        long currentTime = System.currentTimeMillis();
+        return Math.max(0, expirationTime - currentTime);
     }
 
     // Durability

@@ -59,13 +59,12 @@ public class DemoteCmd extends SubCmd {
                 return;
             }
 
+            team.demote(offlineTarget.getUniqueId());
             player.sendMessage(langHandler.getMessage("messages.demote.sent")
-                    .replace("{RANK}", playerRank.getName(playerRank))
+                    .replace("{RANK}", playerRank.getDisplayName())
                     .replace("{PLAYER}", target.getName()));
             target.sendMessage(langHandler.getMessage("messages.demote.received")
-                    .replace("{RANK}", playerRank.getName(playerRank)));
-            team.demote(offlineTarget.getUniqueId());
-
+                    .replace("{RANK}", playerRank.getDisplayName()));
         } else {
 
             PlayerRank playerRank = team.getPlayerRank(target);
@@ -95,12 +94,12 @@ public class DemoteCmd extends SubCmd {
                 return;
             }
 
+            team.demote(target);
             player.sendMessage(langHandler.getMessage("messages.demote.sent")
-                    .replace("{RANK}", playerRank.getNameFromValue(playerRank.value-1))
+                    .replace("{RANK}", playerRank.getDisplayName())
                     .replace("{PLAYER}", target.getName()));
             target.sendMessage(langHandler.getMessage("messages.demote.received")
-                    .replace("{RANK}", playerRank.getNameFromValue(playerRank.value-1)));
-            team.demote(target);
+                    .replace("{RANK}", playerRank.getDisplayName()));
         }
     }
 }

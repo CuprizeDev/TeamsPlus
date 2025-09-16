@@ -33,6 +33,9 @@ public final class TeamsPlus extends JavaPlugin {
     ChestUtil chestUtil = new ChestUtil(this);
     private ConfigHandler lang;
     private ConfigHandler config;
+    private ConfigHandler chest;
+    private ConfigHandler upgrades;
+    private ConfigHandler artifacts;
     FileUtil fileUtil = new FileUtil();
     @Override
     public void onEnable() {
@@ -81,7 +84,6 @@ public final class TeamsPlus extends JavaPlugin {
         // Create Default Files
 
         fileUtil.createFolder(this, "data");
-        fileUtil.createYmlFile(this, "messages");
 
         // Register Commands
 
@@ -123,9 +125,16 @@ public final class TeamsPlus extends JavaPlugin {
 
         // Lang File
         fileUtil.createYmlFile(this, "lang.yml");
+        fileUtil.createYmlFile(this, "chest.yml");
+        fileUtil.createYmlFile(this, "upgrades.yml");
+        fileUtil.createYmlFile(this, "artifacts.yml");
 
         this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
         this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
+        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
+        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
+        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
+
 
         // Initiate Teams
 
@@ -189,6 +198,13 @@ public final class TeamsPlus extends JavaPlugin {
         }
 
     }
+    public void reloadConfiguration() {
+        this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
+        this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
+        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
+        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
+        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
+    }
 
     public ConfigHandler getLangFile() {
         return this.lang;
@@ -197,5 +213,11 @@ public final class TeamsPlus extends JavaPlugin {
     public ConfigHandler getConfigFile() {
         return this.config;
     }
+
+    public ConfigHandler getChestFile() { return this.chest; }
+
+    public ConfigHandler getUpgrades() { return this.upgrades;}
+
+    public ConfigHandler getArtifacts() { return this.artifacts; }
 
 }

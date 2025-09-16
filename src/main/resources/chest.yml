@@ -1,0 +1,44 @@
+chest:
+  menu:
+    title: '&8{TEAM} Claim Chest'
+    size: 54
+    filler:
+      type: BORDER
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      amount: 1
+      lore:
+        - ""
+      glow: true
+    close:
+      material: BARRIER
+      name: "&c&lCLOSE"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    items:
+      shield:
+        material: CLOCK
+        name: "&e&lShield Activation"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 20
+      artifacts:
+        material: TOTEM
+        name: "&6&lArtifacts"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 22
+      upgrades:
+        material: EXPERIENCE_BOTTLE
+        name: "&a&lUpgrades"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 24

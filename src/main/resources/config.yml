@@ -10,6 +10,12 @@ teams:
     commands: 3
     home: 5
     warp: 5
+  shield:
+    time: 4 #Hours
+    cooldown: 4 #Hours
+    econ:
+      enabled: false
+      price: 50000
   chest:
     hologram:
       - '&c&l{TEAM}s Claim Chest'

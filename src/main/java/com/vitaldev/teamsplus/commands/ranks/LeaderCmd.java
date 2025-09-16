@@ -69,14 +69,14 @@ public class LeaderCmd extends SubCmd {
             return;
         }
 
-        player.sendMessage(langHandler.getMessage("messages.promote.sent")
-                .replace("{RANK}", playerRank.getNameFromValue(playerRank.value + 1))
-                .replace("{PLAYER}", target.getName()));
-        target.sendMessage(langHandler.getMessage("messages.promote.received")
-                .replace("{RANK}", playerRank.getNameFromValue(playerRank.value + 1)));
         team.setLeader(target);
         team.setPlayerRank(player, PlayerRank.CO_LEADER);
 
+        player.sendMessage(langHandler.getMessage("messages.promote.sent")
+                .replace("{RANK}", playerRank.getDisplayName())
+                .replace("{PLAYER}", target.getName()));
+        target.sendMessage(langHandler.getMessage("messages.promote.received")
+                .replace("{RANK}", playerRank.getDisplayName()));
 
     }
 }
