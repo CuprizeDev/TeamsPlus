@@ -1,17 +1,14 @@
 package com.vitaldev.teamsplus.commands;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.PlayerRank;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.commands.CommandUtil;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ListCmd extends SubCmd {
 

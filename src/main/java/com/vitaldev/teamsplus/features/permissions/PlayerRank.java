@@ -1,4 +1,4 @@
-package com.vitaldev.teamsplus.teams;
+package com.vitaldev.teamsplus.features.permissions;
 
 public enum PlayerRank {
     LEADER("Leader", 3),

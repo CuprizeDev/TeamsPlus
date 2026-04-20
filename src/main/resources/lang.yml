@@ -9,6 +9,16 @@ messages:
   not-in-team: '&8[&5&l!&8] &cThis player is not in your team!'
   disband: '&8[&5&l!&8] &cYou have disbanded your team!'
   already-in-team: '&8[&5&l!&8] &cYou are already in a team! You cannot run that command!'
+  artifacts:
+    locked: '&8[&5&l!&8] &cYou must upgrade the artifacts upgrade in order to unlock this slot!'
+    invalid-artifact: '&8[&5&l!&8] &cThat is not a valid artifact!'
+    add-sender: '&8[&5&l!&8] &aYou have given {PLAYER} a {TIER-COLOR}{TYPE}&a artifact!'
+    add-recipient: '&8[&5&l!&8] &aYou have been given a {TIER-COLOR}{TYPE}&a artifact!'
+    artifact-added: '&8[&5&l!&8] &aYou have added a {TIER-COLOR}{TYPE} &aartifact to your team!'
+    artifact-removed: '&8[&5&l!&8] &cYou have removed a {TIER-COLOR}{TYPE} &cartifact to your team!'
+    already-applied: '&8[&5&l!&8] &cYou have already applied this artifact to your team!'
+    fly-disabled: '&8[&5&l!&8] &cYou do not have permission to fly in this area!'
+    fly-enabled: '&8[&5&l!&8] &aYour fly has been enabled in team claims!'
   location:
     team-message: '&8[&5&l!&8] &7{PLAYER}s Location: {WORLD}, {X}, {Y}, {Z}'
   chat:
@@ -108,6 +118,10 @@ messages:
   list:
     header: '&7&m----------&r&7[ &2Team List {PAGE-NUMBER}&7/&2{PAGE-COUNT} &7]&m----------'
     message: '&2{TEAM} &7- {ONLINE} / {MEMBERS} online, {POWER} power'
+  upgrades:
+    upgraded: '&8[&5&l!&8] &aYou have purchased a {UPGRADE} upgrade to level {LEVEL} for your team!'
+    not-enough: '&8[&5&l!&8] &cYou do not have enough money to purchase this upgrade!'
+    maximum-level: '&8[&5&l!&8] &cYour team has reached the maximum level for that upgrade!'
   info:
     team-message:
       - '&8&m----------&r&8< {TEAM} &7[{ONLINE}/{TOTAL} &8>&m----------'

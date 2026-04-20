@@ -17,22 +17,35 @@ upgrades:
       lore:
         - ""
       glow: false
+    back:
+      material: ARROW
+      name: "&e&lBACK"
+      amount: 1
+      lore:
+        - ""
+      glow: false
     upgrades:
       artifacts:
         default: 1
         levels:
           1:
             cost: 50000
-            effect: 1
+            effect: 2
           2:
             cost: 150000
-            effect: 2
+            effect: 3
         item:
           material: TOTEM_OF_UNDYING
           name: "&c&lArtifacts Upgrade"
           amount: 1
           lore:
+            - "&7Purchase this upgrade to allow your"
+            - "&7team to equip more artifacts!"
             - ""
+            - "&7Level: &c{LEVEL}"
+            - "&7Price: &c{PRICE}"
+            - ""
+            - "&c&lRIGHT CLICK &cto purchase this upgrade!"
           glow: false
           slot: 20
       durability:
@@ -43,16 +56,23 @@ upgrades:
             effect: 25
           2:
             cost: 250000
-            effect: 50
+            effect: 35
         item:
           material: OBSIDIAN
           name: "&5&lDurability Upgrade"
           amount: 1
           lore:
+            - "&7Purchase this upgrade to raise the"
+            - "&7durability on your claim chest!"
             - ""
+            - "&7Level: &5{LEVEL}"
+            - "&7Price: &5{PRICE}"
+            - ""
+            - "&5&lRIGHT CLICK &5to purchase this upgrade!"
           glow: false
           slot: 22
       exp:
+        default: 0
         levels:
           1:
             cost: 50000
@@ -65,9 +85,15 @@ upgrades:
             effect: 15
         item:
           material: EXPERIENCE_BOTTLE
-          name: "&e&lExperience Upgrade"
+          name: "&6&lExperience Upgrade"
           amount: 1
           lore:
+            - "&7Purchase this upgrade to raise the"
+            - "&7amount of experience gained from mobs!"
             - ""
+            - "&7Level: &6{LEVEL}"
+            - "&7Price: &6{PRICE}"
+            - ""
+            - "&6&lRIGHT CLICK &6to purchase this upgrade!"
           glow: false
           slot: 24

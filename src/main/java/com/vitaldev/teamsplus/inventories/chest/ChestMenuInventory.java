@@ -1,13 +1,11 @@
 package com.vitaldev.teamsplus.inventories.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.inventory.InventoryBuilder;
 import com.vitaldev.vitallibs.items.ItemHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,7 +14,6 @@ import java.util.Objects;
 public class ChestMenuInventory {
 
     private final TeamsPlus plugin;
-    private final ConfigHandler configHandler;
     private final ConfigHandler chestHandler;
     private final Team team;
     private final Player player;
@@ -24,17 +21,15 @@ public class ChestMenuInventory {
 
     public ChestMenuInventory(TeamsPlus plugin, Player player) {
         this.plugin = plugin;
-        this.configHandler = plugin.getConfigFile();
         this.chestHandler = plugin.getChestFile();
         this.team = Team.getTeam(player);
         this.player = player;
         this.builder = new InventoryBuilder(chestHandler.getInt("chest.menu.size"),
-                chestHandler.getMessage("chest.menu.title").replace("{TEAM}", team.getTeamName()));
+                chestHandler.getMessage("chest.menu.title").replace("{TEAM}", team.getTeamName()), false);
     }
 
     public void openInventory() {
         setupMenu();
-        setupItems();
         builder.open(player);
     }
 
@@ -99,6 +94,11 @@ public class ChestMenuInventory {
                 if (item.equals("shield")) {
 
                 }
+
+                if (item.equals("claims")) {
+                    new ChestClaimInventory(plugin, player).openInventory();
+                }
+
             });
 
         }

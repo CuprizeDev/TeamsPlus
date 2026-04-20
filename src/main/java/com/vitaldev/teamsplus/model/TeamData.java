@@ -1,10 +1,10 @@
-package com.vitaldev.teamsplus.util;
+package com.vitaldev.teamsplus.model;
 
 import com.google.gson.*;
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.PlayerRank;
-import com.vitaldev.teamsplus.teams.Team;
-import com.vitaldev.teamsplus.teams.UpgradeType;
+import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
+import com.vitaldev.teamsplus.features.permissions.PlayerRank;
+import com.vitaldev.teamsplus.features.upgrades.UpgradeType;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -105,9 +105,17 @@ public class TeamData {
 
         JsonObject upgradesObject = new JsonObject();
         for (Map.Entry<UpgradeType, Integer> entry : team.getUpgrades().entrySet()) {
-            upgradesObject.addProperty(entry.getKey().getDisplayName(), entry.getValue());
+            upgradesObject.addProperty(entry.getKey().name(), entry.getValue());
         }
         teamData.add("upgrades", upgradesObject);
+
+        // Artifacts
+
+        JsonObject artifactsObject = new JsonObject();
+        for (Map.Entry<ArtifactType, Integer> entry : team.getArtifacts().entrySet()) {
+            artifactsObject.addProperty(entry.getKey().name(), entry.getValue());
+        }
+        teamData.add("artifacts", artifactsObject);
 
         File file = new File(plugin.getDataFolder(), "data/" + team.getTeamUUID().toString() + ".json");
         try (FileWriter writer = new FileWriter(file)) {
@@ -115,6 +123,7 @@ public class TeamData {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public Team loadTeam(UUID teamUUID) {
@@ -208,6 +217,20 @@ public class TeamData {
             for (JsonElement element : invitesArray) {
                 team.addInvite(UUID.fromString(element.getAsString()));
             }
+
+            // Artifacts
+
+            JsonObject artifactsObject = teamData.getAsJsonObject("artifacts");
+
+            if (artifactsObject != null) {
+                for (Map.Entry<String, JsonElement> entry : artifactsObject.entrySet()) {
+                    String artifactName = entry.getKey();
+                    int value = entry.getValue().getAsInt();
+                    team.setArtifactSlot(ArtifactType.fromString(artifactName), value);
+                }
+            }
+
+            // Upgrades
 
             JsonObject upgradesObject = teamData.getAsJsonObject("upgrades");
 

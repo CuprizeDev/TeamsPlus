@@ -1,0 +1,47 @@
+claims:
+  menu:
+    title: '&8{TEAM} Claims'
+    size: 45
+    filler:
+      type: BORDER
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      amount: 1
+      lore:
+        - ""
+      glow: true
+    back:
+      material: ARROW
+      name: "&e&lBACK"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    direction:
+      material: SKELETON_HEAD
+      name: "&a{DIRECTION}"
+      amount: 1
+      lore:
+        - "&aClick to go that direction!"
+      glow: false
+    wilderness:
+      material: ARROW
+      name: "&c&lWilderness"
+      amount: 1
+      lore:
+        - "&cYou are too far to claim this chunk!"
+      glow: false
+    claimable:
+      material: ARROW
+      name: "&a&lClaimable Chunk"
+      amount: 1
+      lore:
+        - "&aYou are able to claim this chunk!"
+      glow: false
+    enemy:
+      material: ARROW
+      name: "&4&lEnemy Claim"
+      amount: 1
+      lore:
+        - "&4This is a enemies claim!"
+      glow: false

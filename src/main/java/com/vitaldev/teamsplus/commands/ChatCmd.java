@@ -1,7 +1,7 @@
 package com.vitaldev.teamsplus.commands;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
 import org.bukkit.command.CommandSender;
@@ -13,7 +13,7 @@ public class ChatCmd extends SubCmd {
 
     private final TeamsPlus plugin;
     public ChatCmd(TeamsPlus teamsPlus) {
-        super("chat", "teamsplus.base.chat", "teamsplus.admin.chat", Arrays.asList("chats", "text", "message"));
+        super("chat", "teamsplus.base.chat", "teamsplus.admin.chat", Arrays.asList("chats", "text", "message", "c"));
         this.plugin = teamsPlus;
     }
 

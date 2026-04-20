@@ -1,4 +1,4 @@
-package com.vitaldev.teamsplus.logs;
+package com.vitaldev.teamsplus.features.logs;
 
 public enum LogType {
     JOIN("Player Joined"),

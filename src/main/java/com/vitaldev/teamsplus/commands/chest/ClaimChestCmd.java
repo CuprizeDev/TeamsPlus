@@ -2,8 +2,8 @@ package com.vitaldev.teamsplus.commands.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
-import com.vitaldev.teamsplus.teams.Team;
-import com.vitaldev.teamsplus.util.ChestUtil;
+import com.vitaldev.teamsplus.model.Team;
+import com.vitaldev.teamsplus.features.chest.ChestManager;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
 import org.bukkit.command.CommandSender;
@@ -24,7 +24,7 @@ public class ClaimChestCmd extends SubCmd {
 
         ConfigHandler langHandler = this.plugin.getLangFile();
 
-        ChestUtil chestUtil = new ChestUtil(TeamsPlus.getPlugin(TeamsPlus.class));
+        ChestManager chestUtil = new ChestManager(TeamsPlus.getPlugin(TeamsPlus.class));
         if (!(sender instanceof Player)) {
             ConsoleUtil.sendMessage(langHandler.getMessage("messages.only-players"));
             return;
@@ -38,8 +38,8 @@ public class ClaimChestCmd extends SubCmd {
         }
 
         player.sendMessage(langHandler.getMessage("messages.chest.received"));
-        if (!player.getInventory().addItem(chestUtil.createClaimChest()).isEmpty()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), chestUtil.createClaimChest());
+        if (!player.getInventory().addItem(chestUtil.getClaimChestItem()).isEmpty()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), chestUtil.getClaimChestItem());
         }
     }
 }

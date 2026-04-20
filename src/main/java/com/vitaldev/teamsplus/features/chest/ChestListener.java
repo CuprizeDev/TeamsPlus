@@ -1,13 +1,12 @@
-package com.vitaldev.teamsplus.listeners;
+package com.vitaldev.teamsplus.features.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.inventories.chest.ChestMenuInventory;
-import com.vitaldev.teamsplus.teams.Team;
-import com.vitaldev.teamsplus.util.TeamData;
+import com.vitaldev.teamsplus.model.Team;
+import com.vitaldev.teamsplus.model.TeamData;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.items.NBTHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,11 +22,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public class TeamChestListener implements Listener {
+public class ChestListener implements Listener {
 
     public TeamsPlus plugin;
 
-    public TeamChestListener(TeamsPlus plugin) {
+    public ChestListener(TeamsPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -60,6 +59,26 @@ public class TeamChestListener implements Listener {
 
     @EventHandler
     public void onChestBreak(BlockBreakEvent event) {
+
+        Block block = event.getBlock();
+
+        if (block == null) {
+            return;
+        }
+
+        if (block.getType() != Material.CHEST) {
+            return;
+        }
+
+        NBTHandler nbtHandler = new NBTHandler(plugin);
+
+        if (!nbtHandler.getBoolean(block, nbtHandler.getKey() + "claim_chest")){
+            return;
+        }
+
+        Location location = block.getLocation();
+
+        location.getWorld().dropItemNaturally(location, new ChestItemBuilder(plugin).buildClaimChest());
 
     }
 

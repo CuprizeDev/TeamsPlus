@@ -12,7 +12,7 @@ public abstract class SubCmd {
     private final String adminPermission;
     private final List<String> aliases;
 
-    public SubCmd(String name, String permission, String adminPermission, List<String> aliases) {
+    protected SubCmd(String name, String permission, String adminPermission, List<String> aliases) {
         this.name = name;
         this.permission = permission;
         this.adminPermission = adminPermission;

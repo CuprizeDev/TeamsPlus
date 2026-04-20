@@ -1,7 +1,7 @@
 package com.vitaldev.teamsplus.listeners;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

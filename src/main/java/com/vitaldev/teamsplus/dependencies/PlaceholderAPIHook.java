@@ -1,7 +1,7 @@
 package com.vitaldev.teamsplus.dependencies;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     public final TeamsPlus plugin;
-
+    
     public PlaceholderAPIHook(TeamsPlus plugin) {
         this.plugin = plugin;
     }

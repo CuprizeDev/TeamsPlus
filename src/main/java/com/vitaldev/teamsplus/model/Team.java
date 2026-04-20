@@ -1,6 +1,9 @@
-package com.vitaldev.teamsplus.teams;
+package com.vitaldev.teamsplus.model;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
+import com.vitaldev.teamsplus.features.permissions.PlayerRank;
+import com.vitaldev.teamsplus.features.upgrades.UpgradeType;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
 import com.vitaldev.vitallibs.util.FileUtil;
@@ -35,12 +38,13 @@ public class Team {
     private int power = 0;
     private final Location claimChest;
     public TeamsPlus plugin;
-    public final ConfigHandler configHandler;
+    private final ConfigHandler configHandler;
+    private final ConfigHandler upgradeHandler;
     private boolean shieldStatus = false;
-    int durability = 5;
-    private Map<String, Long> cooldowns = new HashMap<>();
-    private Map<UpgradeType, Integer> upgrades = new HashMap<>();
-
+    private final Map<String, Long> cooldowns = new HashMap<>();
+    private final EnumMap<UpgradeType, Integer> upgrades = new EnumMap<>(UpgradeType.class);
+    private final EnumMap<ArtifactType, Integer> artifacts = new EnumMap<>(ArtifactType.class);
+    int durability;
 
     public Team(TeamsPlus plugin, String teamName, UUID leader, UUID uuid, Location claimChestLocation) {
         this.teamName = teamName;
@@ -53,6 +57,13 @@ public class Team {
         this.plugin = plugin;
         this.uuid = uuid;
         this.configHandler = plugin.getConfigFile();
+        this.upgradeHandler = plugin.getUpgrades();
+
+        upgrades.put(UpgradeType.EXP, 0);
+        upgrades.put(UpgradeType.ARTIFACTS, 0);
+        upgrades.put(UpgradeType.DURABILITY, 0);
+
+        durability = getUpgradeEffect(UpgradeType.DURABILITY);
 
        if (DHAPI.getHologram(uuid.toString()) != null) {
            removeHologram();
@@ -77,6 +88,37 @@ public class Team {
         new FileUtil().createJsonFile(plugin, "data/" + getTeamUUID());
     }
 
+    // Artifacts
+
+    public Map<ArtifactType, Integer> getArtifacts() {
+        return artifacts;
+    }
+
+    public int getArtifactSlot(ArtifactType artifact) {
+        return artifacts.get(artifact);
+    }
+
+    public boolean hasArtifactApplied(ArtifactType type) {
+        return artifacts.containsKey(type);
+    }
+
+    public ArtifactType getArtifactFromSlot(int slot) {
+        for (Map.Entry<ArtifactType, Integer> entry : artifacts.entrySet()) {
+            if (entry.getValue() == slot) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public void setArtifactSlot(ArtifactType artifact, int slot) {
+        artifacts.put(artifact, slot);
+    }
+
+    public void clearSlot(int slot) {
+        artifacts.values().remove(slot);
+    }
+
     // Upgrades
 
     public Map<UpgradeType, Integer> getUpgrades() {
@@ -88,7 +130,19 @@ public class Team {
     }
 
     public void setUpgradeLevel(UpgradeType upgrade, int level) {
-        upgrades.put(upgrade, level);
+        upgrades.replace(upgrade, level);
+    }
+
+    public int getUpgradeEffect(UpgradeType upgrade) {
+
+        int level = getUpgradeLevel(upgrade);
+        String path = "upgrades.menu.upgrades." + upgrade.name().toLowerCase();
+
+        if (level == 0) {
+            return plugin.getUpgrades().getInt(path + ".default");
+        }
+
+        return plugin.getUpgrades().getInt(path + ".levels." + level + ".effect");
     }
 
     public void upgradeLevel(UpgradeType upgrade) {
@@ -134,6 +188,17 @@ public class Team {
         durability = amount;
     }
 
+    public int getMaxDurability() {
+
+        int level = getUpgradeLevel(UpgradeType.DURABILITY);
+        String path = "upgrades.menu.upgrades.durability.";
+        if (level == 0) {
+            return upgradeHandler.getInt(path + "default");
+        }
+
+        return plugin.getUpgrades().getInt(path + "levels." + level + ".effect");
+    }
+
     public void removeDurability(int amount) {
         durability -= amount;
     }
@@ -167,7 +232,9 @@ public class Team {
     }
 
     public void removeHologram() {
-        DHAPI.removeHologram(hologram.getId());
+        if (hologram!= null) {
+            DHAPI.removeHologram(hologram.getId());
+        }
     }
 
     public void updateHologram() {
@@ -265,12 +332,7 @@ public class Team {
     public void addMember(UUID playerUUID, PlayerRank rank) {
         allPlayerTeams.put(playerUUID, getTeamUUID());
         members.add(playerUUID);
-
-        if (Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(playerUUID))) {
-            setPlayerRank(Objects.requireNonNull(Bukkit.getPlayer(playerUUID)), rank);
-        } else {
-            setPlayerRank(Objects.requireNonNull(Bukkit.getOfflinePlayer(playerUUID).getPlayer()), rank);
-        }
+        setPlayerRank(playerUUID, rank);
     }
 
     public void removeMember(Player player) {
@@ -360,6 +422,10 @@ public class Team {
 
     public PlayerRank getPlayerRank(Player player) {
         return playerRanks.get(player.getUniqueId());
+    }
+
+    public boolean isHigherRank(Player player1, Player player2) {
+        return getPlayerRank(player1).getValue() > getPlayerRank(player2).getValue();
     }
 
     public PlayerRank getPlayerRank(UUID playerUUID) {
@@ -509,6 +575,10 @@ public class Team {
 
     // Claims
 
+    public boolean isInClaim(Player player) {
+        return claims.contains(player.getLocation().getChunk());
+    }
+
     public Location getClaimChest() {
         return claimChest.clone();
     }
@@ -653,5 +723,6 @@ public class Team {
     public static boolean containsClaimChest(Chunk chunk) {
         return allClaimChests.containsKey(chunk);
     }
+
 
 }

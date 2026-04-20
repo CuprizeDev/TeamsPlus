@@ -9,19 +9,24 @@ import com.vitaldev.teamsplus.commands.chest.ClaimChestCmd;
 import com.vitaldev.teamsplus.commands.ranks.DemoteCmd;
 import com.vitaldev.teamsplus.commands.ranks.PromoteCmd;
 import com.vitaldev.teamsplus.commands.relation.*;
+import com.vitaldev.teamsplus.dependencies.DiscordSRVHook;
 import com.vitaldev.teamsplus.dependencies.PlaceholderAPIHook;
 import com.vitaldev.teamsplus.listeners.TeamChatListener;
-import com.vitaldev.teamsplus.listeners.TeamChestListener;
+import com.vitaldev.teamsplus.features.chest.ChestListener;
 import com.vitaldev.teamsplus.listeners.TeamHomeListener;
-import com.vitaldev.teamsplus.teams.Team;
-import com.vitaldev.teamsplus.util.ChestUtil;
-import com.vitaldev.teamsplus.util.TeamData;
+import com.vitaldev.teamsplus.features.artifacts.ArtifactItemBuilder;
+import com.vitaldev.teamsplus.features.artifacts.ArtifactManager;
+import com.vitaldev.teamsplus.features.chest.ChestManager;
+import com.vitaldev.teamsplus.model.Team;
+import com.vitaldev.teamsplus.model.TeamData;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
 import com.vitaldev.vitallibs.util.FileUtil;
 import dev.respark.licensegate.LicenseGate;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Chunk;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -30,13 +35,19 @@ import java.util.UUID;
 public final class TeamsPlus extends JavaPlugin {
 
     TeamData teamData = new TeamData(this);
-    ChestUtil chestUtil = new ChestUtil(this);
     private ConfigHandler lang;
     private ConfigHandler config;
     private ConfigHandler chest;
     private ConfigHandler upgrades;
     private ConfigHandler artifacts;
+    private ConfigHandler claims;
+    private ArtifactManager artifactManager;
+    private ArtifactItemBuilder artifactItemBuilder;
     FileUtil fileUtil = new FileUtil();
+    private static Economy eco;
+    ChestManager chestUtil = new ChestManager(this);
+    private final String ADMIN_PERM = "teamsplus.admin.*";
+
     @Override
     public void onEnable() {
 
@@ -85,6 +96,27 @@ public final class TeamsPlus extends JavaPlugin {
 
         fileUtil.createFolder(this, "data");
 
+        // YML Files
+
+        fileUtil.createYmlFile(this, "lang.yml");
+        fileUtil.createYmlFile(this, "chest.yml");
+        fileUtil.createYmlFile(this, "upgrades.yml");
+        fileUtil.createYmlFile(this, "artifacts.yml");
+        fileUtil.createYmlFile(this, "claims.yml");
+
+        this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
+        this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
+        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
+        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
+        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
+        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "claims.yml"));
+
+        // Artifact Logic
+
+        artifactManager = new ArtifactManager(this);
+        artifactManager.loadDefinitions();
+        artifactItemBuilder = new ArtifactItemBuilder(this);
+
         // Register Commands
 
         TeamCmd teamCommand = new TeamCmd(this,"team", new String[]{"t", "teams", "Team"}, "Main team command", "teamsplus.base", "teamsplus.admin");
@@ -110,32 +142,35 @@ public final class TeamsPlus extends JavaPlugin {
         teamCommand.registerSubCommand(new ListCmd(this));
         teamCommand.registerSubCommand(new LocationCmd(this));
 
+        new ArtifactCmd(this,
+                "artifact",
+                new String[]{"artifacts", "arti"},
+                "Main command for artifacts",
+                "teamsplus.artifacts.*");
+
         // Dependencies
 
         new PlaceholderAPIHook(this).register();
-
-        // Register Recipes
-
-        new ChestUtil(this).addCustomRecipe();
+        new DiscordSRVHook(this).initiateDiscordSRV();
 
         // Register Listeners
 
         getServer().getPluginManager().registerEvents(new TeamChatListener(this), this);
-        getServer().getPluginManager().registerEvents(new TeamChestListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChestListener(this), this);
         getServer().getPluginManager().registerEvents(new TeamHomeListener(this),this);
 
-        // Lang File
-        fileUtil.createYmlFile(this, "lang.yml");
-        fileUtil.createYmlFile(this, "chest.yml");
-        fileUtil.createYmlFile(this, "upgrades.yml");
-        fileUtil.createYmlFile(this, "artifacts.yml");
+        // Eco
 
-        this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
-        this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
-        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
-        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
-        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
+        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            if (rsp != null) {
+                eco = rsp.getProvider();
+            }
+        }
 
+        // Register Recipes
+
+        new ChestManager(this).registerRecipes();
 
         // Initiate Teams
 
@@ -159,14 +194,15 @@ public final class TeamsPlus extends JavaPlugin {
         // Iterate over each file and load the team
         for (File file : jsonFiles) {
             try {
-                // Extract UUID from the filename (assuming filenames are UUIDs)
+
                 String fileName = file.getName().replace(".json", "");
                 UUID teamUUID = UUID.fromString(fileName);
 
-                // Load the team using your loadTeam method
                 Team team = teamData.loadTeam(teamUUID);
                 Team.addUUID(team.getTeamUUID(), team);
                 teamData.loadExtraData(teamUUID);
+                team.setDurability(team.getMaxDurability());
+                team.updateHologram();
 
                 for (Chunk chunk : team.getClaims()) {
                     Team.addClaim(team.getTeamUUID(), chunk);
@@ -183,7 +219,7 @@ public final class TeamsPlus extends JavaPlugin {
 
         // Remove Recipes
 
-        chestUtil.removeCustomRecipes();
+        chestUtil.removeRecipes();
 
         // Save Teams
 
@@ -199,12 +235,22 @@ public final class TeamsPlus extends JavaPlugin {
         }
 
     }
+
     public void reloadConfiguration() {
         this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
         this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
         this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
         this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
         this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
+        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "claims.yml"));
+    }
+
+    public ArtifactManager getArtifactManager() {
+        return artifactManager;
+    }
+
+    public ArtifactItemBuilder getArtifactItemBuilder() {
+        return artifactItemBuilder;
     }
 
     public ConfigHandler getLangFile() {
@@ -221,4 +267,13 @@ public final class TeamsPlus extends JavaPlugin {
 
     public ConfigHandler getArtifacts() { return this.artifacts; }
 
+    public ConfigHandler getClaims() { return this.claims; }
+
+    public String getAdminPermission() {
+        return this.ADMIN_PERM;
+    }
+
+    public Economy getEcon() {
+        return eco;
+    }
 }

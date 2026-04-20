@@ -27,7 +27,7 @@ chest:
         glow: false
         slot: 20
       artifacts:
-        material: TOTEM
+        material: TOTEM_OF_UNDYING
         name: "&6&lArtifacts"
         amount: 1
         lore:
@@ -42,3 +42,11 @@ chest:
           - ""
         glow: false
         slot: 24
+      claims:
+        material: GRASS_BLOCK
+        name: "&2&lClaims"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 25

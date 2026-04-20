@@ -1,7 +1,7 @@
 package com.vitaldev.teamsplus.commands;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
 import com.vitaldev.vitallibs.util.ConsoleUtil;

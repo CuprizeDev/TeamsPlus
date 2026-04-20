@@ -2,7 +2,7 @@ package com.vitaldev.teamsplus.commands.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
-import com.vitaldev.teamsplus.teams.Team;
+import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
 import org.bukkit.Location;
