@@ -1,26 +1,120 @@
 permissions:
+
+  # -----------------------------------------------------------------------
+  # GUI Configuration
+  # -----------------------------------------------------------------------
+
+  menu:
+    title: '&8{TEAM} Permissions'
+    size: 54
+
+    filler:
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      amount: 1
+      lore:
+        - ""
+      glow: true
+
+    close:
+      material: BARRIER
+      name: "&c&lCLOSE"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    back:
+      material: ARROW
+      name: "&e&lBACK"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    nav-prev:
+      material: ARROW
+      name: "&e&l« {RANK}"
+      amount: 1
+      lore:
+        - "&7Click to view the previous rank"
+      glow: false
+
+    nav-next:
+      material: ARROW
+      name: "&e&l{RANK} »"
+      amount: 1
+      lore:
+        - "&7Click to view the next rank"
+      glow: false
+
+  # -----------------------------------------------------------------------
+  # Default permission values loaded on team creation.
+  # Per-team overrides are stored in each team's JSON data file.
+  # -----------------------------------------------------------------------
+
   default:
+
     MEMBER:
-      commands:
-        find-chest: true
-        home: true
-        promote: false
-        demote: false
-        ally: false
-        invite: false
-        logs: false
-        name: false
-        warp: true
-        disband: false
-        setwarp: false
       actions:
-        destroy: true
-        build: true
-        container: true
-        chest: false
-        territory: false
-        upgrade: false
+        build: false
+        destroy: false
+        container: false
         door: true
-        interact: true
+        button: true
+        lever: true
+        plate: true
+        redstone: false
+        invite: false
+        kick: false
+        promote: false
+        territory: false
+        home: true
+        set_home: false
+        artifacts: false
+        ally: false
+        settings: false
+        chat: true
+        upgrades: false
+
     OFFICER:
+      actions:
+        build: true
+        destroy: true
+        container: true
+        door: true
+        button: true
+        lever: true
+        plate: true
+        redstone: true
+        invite: true
+        kick: false
+        promote: false
+        territory: true
+        home: true
+        set_home: false
+        artifacts: false
+        ally: false
+        settings: false
+        chat: true
+        upgrades: true
+
     CO_LEADER:
+      actions:
+        build: true
+        destroy: true
+        container: true
+        door: true
+        button: true
+        lever: true
+        plate: true
+        redstone: true
+        invite: true
+        kick: true
+        promote: true
+        territory: true
+        home: true
+        set_home: true
+        artifacts: true
+        ally: true
+        settings: true
+        chat: true
+        upgrades: true

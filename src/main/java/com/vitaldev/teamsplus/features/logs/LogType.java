@@ -14,9 +14,7 @@ public enum LogType {
     SHIELD_ACTIVATE("Shield Activated"),
     ARTIFACT_ADD("Artifact Added"),
     ARTIFACT_REMOVE("Artifact Removed"),
-    UPGRADE_PURCHASE("Upgrade Purchased"),
-    HOME_SET("Home Set");
-
+    UPGRADE_PURCHASE("Upgrade Purchased");
     private final String displayName;
 
     LogType(String displayName) {

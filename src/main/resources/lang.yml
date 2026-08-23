@@ -133,3 +133,23 @@ messages:
       - '&f* &7Claims: {CLAIMS}'
       - '&f* &7Power: {POWER}'
       - '&8&m--------------------------------------------'
+  permissions:
+    toggled-on: '&8[&5&l!&8] &aYou have &2enabled &a{ACTION} &afor the &2{RANK} &arank!'
+    toggled-off: '&8[&5&l!&8] &cYou have &4disabled &c{ACTION} &cfor the &4{RANK} &crank!'
+  boosters:
+    invalid-booster: '&8[&5&l!&8] &cThat booster does not exist in the configuration!'
+    add-sender: '&8[&5&l!&8] &aYou have given {PLAYER} &aa {TIER-COLOR}{BOOSTER}&a.'
+    add-recipient: '&8[&5&l!&8] &aYou have received a {TIER-COLOR}{BOOSTER}&a.'
+    booster-already-active: '&8[&5&l!&8] &cYour team already has an active {TYPE} booster!'
+    booster-activated: '&8[&5&l!&8] &a{PLAYER} has activated a {BOOSTER} for the team!'
+    booster-expired: '&8[&6&l!&8] &cYour team''s {BOOSTER} &chas expired!'
+  shield:
+    not-enough-charge: '&cYour team does not have enough shield charge! You need at least 1 hour.'
+    shield-deploying: '&8[&b&l!&8] &bYour team''s shield is now deploying. It will activate in 15 minutes.'
+    shield-activated: '&8[&b&l!&8] &aYour team''s shield is now &2active&a!'
+    shield-deactivated: '&8[&b&l!&8] &cYour team''s shield has been &4deactivated&c. Cooldown started.'
+    shield-deploy-cancelled: '&8[&b&l!&8] &eShield auto-deployment cancelled because a team member logged in.'
+    shield-expired: '&8[&b&l!&8] &cYour team''s shield charge has run out! Shield deactivated.'
+    auto-enabled: '&8[&b&l!&8] &aAuto shield has been &2enabled&a.'
+    auto-disabled: '&8[&b&l!&8] &cAuto shield has been &4disabled&c.'
+    on-cooldown: '&cYour team''s shield is on cooldown! Remaining: {TIME}'

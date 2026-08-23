@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class UninviteCmd extends SubCmd {
 
@@ -62,6 +63,7 @@ public class UninviteCmd extends SubCmd {
             }
 
             team.removeInvite(offlineTarget.getUniqueId());
+            this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_REMOVE, player, player.getLocation(), Map.of("target", offlineTarget.getName()));
             player.sendMessage(langHandler.getMessage("messages.invite.removed")
                     .replace("{PLAYER}", offlineTarget.getName()));
 
@@ -81,6 +83,7 @@ public class UninviteCmd extends SubCmd {
             }
 
             team.removeInvite(target);
+            this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_REMOVE, player, player.getLocation(), Map.of("target", target.getName()));
             player.sendMessage(langHandler.getMessage("messages.invite.removed")
                     .replace("{PLAYER}", target.getName()));
         }

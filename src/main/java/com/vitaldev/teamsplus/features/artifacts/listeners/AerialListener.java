@@ -16,21 +16,21 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class AerialListener implements Listener {
 
     private final Map<UUID, Boolean> playersInFly = new HashMap<>();
-    private final List<UUID> noFall = new ArrayList<>();
+    private final Set<UUID> noFall = new HashSet<>();
 
     private final String FLY_BYPASS_PERM = "teamsplus.admin.fly";
     private final String ADMIN_PERM = "teamsplus.admin.fly";
 
-    public TeamsPlus plugin;
+    public final TeamsPlus plugin;
     private final ConfigHandler langHandler;
 
     public AerialListener(TeamsPlus plugin) {
@@ -54,7 +54,9 @@ public class AerialListener implements Listener {
         return playersInFly.getOrDefault(player.getUniqueId(), false);
     }
 
-    public void setFly(Player player, Boolean mode) { playersInFly.put(player.getUniqueId(), mode); }
+    public void setFly(Player player, Boolean mode) {
+        playersInFly.put(player.getUniqueId(), mode);
+    }
 
     public void enableFly(Player player) {
         playersInFly.put(player.getUniqueId(), true);
@@ -68,16 +70,7 @@ public class AerialListener implements Listener {
         player.setFlying(false);
     }
 
-    @EventHandler
-    public void onFlyListener(PlayerMoveEvent event) {
-
-        Player player = event.getPlayer();
-        Team team = Team.getTeam(player);
-
-        if (!hasRequirements(player)) {
-            return;
-        }
-
+    private void checkAndToggleFly(Player player, Team team) {
         if (!team.isInClaim(player)) {
             if (isFlyToggled(player)) {
                 player.sendMessage(langHandler.getMessage("messages.artifacts.fly-disabled"));
@@ -90,109 +83,56 @@ public class AerialListener implements Listener {
                 enableFly(player);
             }
         }
+    }
 
+    @EventHandler
+    public void onFlyListener(PlayerMoveEvent event) {
+        // Performance guard: Only check flight if player actually changed blocks
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&
+                event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (!hasRequirements(player)) {
+            return;
+        }
+
+        checkAndToggleFly(player, Team.getTeam(player));
     }
 
     @EventHandler
     public void onTeleportListener(PlayerTeleportEvent event) {
-
         Player player = event.getPlayer();
-        Team team = Team.getTeam(player);
-
         if (!hasRequirements(player)) {
             return;
         }
 
-        if (!team.isInClaim(player)) {
-            if (isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-disabled"));
-                removeFly(player);
-                addNoFall(player);
-            }
-        } else {
-            if (!isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-enabled"));
-                enableFly(player);
-            }
-        }
-
-
-
-    }
-
-    @EventHandler
-    public void onJoinListener(PlayerMoveEvent event) {
-
-        Player player = event.getPlayer();
-        Team team = Team.getTeam(player);
-
-        if (!hasRequirements(player)) {
-            return;
-        }
-
-        if (!team.isInClaim(player)) {
-            if (isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-disabled"));
-                removeFly(player);
-                addNoFall(player);
-            }
-        } else {
-            if (!isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-enabled"));
-                enableFly(player);
-            }
-        }
-
+        checkAndToggleFly(player, Team.getTeam(player));
     }
 
     @EventHandler
     public void onDeathListener(PlayerDeathEvent event) {
-
         Player player = event.getEntity().getPlayer();
-
-        if (player == null) {
+        if (player == null || !hasRequirements(player)) {
             return;
         }
 
-        Team team = Team.getTeam(player);
-
-        if (!hasRequirements(player)) {
-            return;
-        }
-
-        if (!team.isInClaim(player)) {
-            if (isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-disabled"));
-                removeFly(player);
-                addNoFall(player);
-            }
-        } else {
-            if (!isFlyToggled(player)) {
-                player.sendMessage(langHandler.getMessage("messages.artifacts.fly-enabled"));
-                enableFly(player);
-            }
-        }
+        checkAndToggleFly(player, Team.getTeam(player));
     }
 
     @EventHandler
     public void onDamageListener(EntityDamageByEntityEvent event) {
-
-        if (event.getEntityType() != EntityType.PLAYER) {
-            return;
-        }
-
-        if (event.getDamager().getType() != EntityType.PLAYER) {
+        if (event.getEntityType() != EntityType.PLAYER || event.getDamager().getType() != EntityType.PLAYER) {
             return;
         }
 
         Player player = (Player) event.getEntity();
-
-        Team team = Team.getTeam(player);
-
         if (!hasRequirements(player)) {
             return;
         }
 
+        Team team = Team.getTeam(player);
         if (!team.isInClaim(player)) {
             if (isFlyToggled(player)) {
                 player.sendMessage(langHandler.getMessage("messages.artifacts.fly-disabled"));
@@ -201,9 +141,10 @@ public class AerialListener implements Listener {
             }
         } else {
             if (!isFlyToggled(player)) {
+                // Kept scheduled delay match task exactly as original logic specified
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                            player.sendMessage(langHandler.getMessage("messages.artifacts.fly-enabled"));
-                        }, 20L);
+                    player.sendMessage(langHandler.getMessage("messages.artifacts.fly-enabled"));
+                }, 20L);
                 enableFly(player);
             }
         }
@@ -211,17 +152,11 @@ public class AerialListener implements Listener {
 
     @EventHandler
     public void onFallDamage(EntityDamageEvent event) {
-
-        if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-            return;
-        }
-
-        if (event.getEntityType() != EntityType.PLAYER) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.FALL || event.getEntityType() != EntityType.PLAYER) {
             return;
         }
 
         Player player = (Player) event.getEntity();
-
         if (!hasNoFall(player)) {
             return;
         }
@@ -235,20 +170,15 @@ public class AerialListener implements Listener {
     }
 
     public boolean hasRequirements(Player player) {
-
-        if (!Team.getTeam(player).hasArtifactApplied(ArtifactType.AERIAL)) {
+        if (player.getGameMode() != GameMode.SURVIVAL) {
             return false;
         }
 
-        //if (hasAdminPerms(player)) {
-        //    return false;
-        //}
-
-        if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
+        Team team = Team.getTeam(player);
+        if (team == null || !team.hasArtifactApplied(ArtifactType.AERIAL)) {
             return false;
         }
 
         return true;
     }
-
 }

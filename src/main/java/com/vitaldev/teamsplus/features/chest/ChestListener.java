@@ -1,7 +1,6 @@
 package com.vitaldev.teamsplus.features.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.inventories.chest.ChestMenuInventory;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.teamsplus.model.TeamData;
 import com.vitaldev.vitallibs.config.ConfigHandler;

@@ -1,8 +1,10 @@
-package com.vitaldev.teamsplus.inventories.chest;
+package com.vitaldev.teamsplus.features.upgrades;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.features.chest.ChestMenuInventory;
 import com.vitaldev.teamsplus.model.Team;
-import com.vitaldev.teamsplus.features.upgrades.UpgradeType;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.inventory.InventoryBuilder;
 import com.vitaldev.vitallibs.items.ItemHandler;
@@ -12,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
+import java.util.Map;
 import java.util.Objects;
 
 public class ChestUpgradeInventory {
@@ -43,6 +46,8 @@ public class ChestUpgradeInventory {
     private void setupMenu() {
         String fillerPath = "upgrades.menu.filler";
         String closePath = "upgrades.menu.close";
+        String backPath = "upgrades.menu.back";
+
 
         ItemStack filler = ItemHandler.buildItem(
                 Objects.requireNonNull(Material.getMaterial(upgradeHandler.getString(fillerPath + ".material"))),
@@ -61,6 +66,20 @@ public class ChestUpgradeInventory {
                 upgradeHandler.getBoolean(closePath + ".glow"),
                 true
         );
+
+        ItemStack backButton = ItemHandler.buildItem(
+                Objects.requireNonNull(Material.getMaterial(upgradeHandler.getString(backPath + ".material"))),
+                upgradeHandler.getMessage(backPath + ".name"),
+                upgradeHandler.getInt(backPath + ".amount"),
+                upgradeHandler.getStringList(backPath + ".lore"),
+                upgradeHandler.getBoolean(backPath + ".glow"),
+                true
+        );
+
+        builder.setBackButton(backButton, event -> {
+            event.setCancelled(true);
+            new ChestMenuInventory(plugin, player).openInventory();
+        });
 
         setupItems();
 
@@ -114,6 +133,11 @@ public class ChestUpgradeInventory {
             return;
         }
 
+        if (!team.canDo(player, PermissableAction.UPGRADES) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color(plugin.getLangFile().getString("messages.permissions.denied")));
+            return;
+        }
+
         int nextLevelCost = getNextLevelCost(upgradeHandler.getString("upgrades.menu.upgrades." + upgrade), level);
 
         if (!hasEnoughMoney(player, nextLevelCost)) {
@@ -131,6 +155,7 @@ public class ChestUpgradeInventory {
             team.setDurability(team.getMaxDurability());
             team.updateHologram();
         }
+        plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.UPGRADE_PURCHASE, player, player.getLocation(), Map.of("UPGRADE", upgrade, "LEVEL", String.valueOf(level + 1)));
         player.closeInventory();
     }
 

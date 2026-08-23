@@ -2,6 +2,8 @@ package com.vitaldev.teamsplus.commands.teleport;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
@@ -35,6 +37,12 @@ public class HomeCmd extends SubCmd {
 
         if (!Team.hasTeam(player)) {
             player.sendMessage(langHandler.getMessage("messages.need-team"));
+            return;
+        }
+
+        Team team = Team.getTeam(player);
+        if (!team.canDo(player, PermissableAction.HOME) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(langHandler.getMessage("messages.permissions.denied"));
             return;
         }
 

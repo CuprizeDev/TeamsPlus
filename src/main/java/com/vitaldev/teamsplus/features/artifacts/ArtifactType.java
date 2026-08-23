@@ -11,11 +11,18 @@ public enum ArtifactType {
     BEACON,
     BEAST_FORGE,
     AERIAL,
-    INQUISITIVE;
+    INQUISITIVE,
+    HARVESTER,
+    SANCTUARY,
+    WARDEN;
 
     public static ArtifactType fromString(String value) {
+        if (value == null) {
+            return null;
+        }
+
         try {
-            return ArtifactType.valueOf(value.toUpperCase());
+            return ArtifactType.valueOf(value.toUpperCase().replace("-", "_"));
         } catch (IllegalArgumentException ex) {
             return null;
         }

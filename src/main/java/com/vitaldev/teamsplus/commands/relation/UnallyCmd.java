@@ -2,6 +2,8 @@ package com.vitaldev.teamsplus.commands.relation;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
@@ -10,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class UnallyCmd extends SubCmd {
@@ -38,6 +41,11 @@ public class UnallyCmd extends SubCmd {
         }
         String teamName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         Team team = Team.getTeam(player);
+
+        if (!team.canDo(player, PermissableAction.ALLY) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(langHandler.getMessage("messages.permissions.denied"));
+            return;
+        }
         for (UUID teamUUID : Team.getTeamList()) {
             Team targetTeam = Team.getTeam(teamUUID);
             if (targetTeam.getTeamName().equals(teamName)) {
@@ -57,6 +65,9 @@ public class UnallyCmd extends SubCmd {
                 player.sendMessage(langHandler.getMessage("messages.ally.removed"));
                 targetTeam.removeAlly(teamUUID);
                 team.removeAlly(teamUUID);
+
+                this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.ALLY_REMOVE, player, player.getLocation(), Map.of("ally", targetTeam.getTeamName()));
+                this.plugin.getLogManager().logEvent(targetTeam, com.vitaldev.teamsplus.features.logs.LogType.ALLY_REMOVE, null, null, Map.of("ally", team.getTeamName()));
                 return;
             }
         }

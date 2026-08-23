@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class TeamChatListener implements Listener {
@@ -22,23 +23,31 @@ public class TeamChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeamChat(AsyncPlayerChatEvent event) {
-
         Player player = event.getPlayer();
         Team team = Team.getTeam(player);
-        ConfigHandler langHandler = this.plugin.getLangFile();
 
-        if (team.isTeamChatEnabled(player)) {
-            for (UUID playerUUID : team.getMembers()) {
-                Player onlinePlayer = Bukkit.getPlayer(playerUUID);
-                if (Bukkit.getOnlinePlayers().contains(onlinePlayer)) {
-                    onlinePlayer.sendMessage(langHandler.getMessage("messages.chat.team-chat")
-                            .replace("{TEAM}", team.getTeamName())
-                            .replace("{PLAYER}", event.getPlayer().getName())
-                            .replace("{MESSAGE}", event.getMessage()));
+        // getTeam and isTeamChatEnabled use read-only maps — safe to call here
+        if (team == null || !team.isTeamChatEnabled(player)) return;
+
+        // Capture all state while still on the async thread (immutable primitives / copies)
+        ConfigHandler langHandler = this.plugin.getLangFile();
+        String messageTemplate = langHandler.getMessage("messages.chat.team-chat")
+                .replace("{TEAM}", team.getTeamName())
+                .replace("{PLAYER}", player.getName())
+                .replace("{MESSAGE}", event.getMessage());
+        Set<UUID> memberSnapshot = team.getMembers(); // unmodifiable view, safe to read
+
+        // Cancel the public chat event — safe to do from async thread
+        event.setCancelled(true);
+
+        // Dispatch to main thread for all Bukkit API calls
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (UUID memberUUID : memberSnapshot) {
+                Player onlinePlayer = Bukkit.getPlayer(memberUUID);
+                if (onlinePlayer != null && onlinePlayer.isOnline()) {
+                    onlinePlayer.sendMessage(messageTemplate);
                 }
             }
-
-            event.setCancelled(true);
-        }
+        });
     }
 }

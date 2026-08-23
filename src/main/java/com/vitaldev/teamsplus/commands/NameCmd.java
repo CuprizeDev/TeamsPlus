@@ -1,6 +1,9 @@
 package com.vitaldev.teamsplus.commands;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.commands.SubCmd;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ChatUtil;
@@ -9,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 public class NameCmd extends SubCmd {
@@ -38,6 +42,13 @@ public class NameCmd extends SubCmd {
         }
 
         Player player = (Player) sender;
+        
+        Team team = Team.getTeam(player);
+        if (!team.canDo(player, PermissableAction.SETTINGS) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(langHandler.getMessage("messages.permissions.denied"));
+            return;
+        }
+        
         String name = args[1];
 
         if (name.equals(Team.getTeam(player).getTeamName())) {
@@ -63,9 +74,9 @@ public class NameCmd extends SubCmd {
             return;
         }
 
-        Team team = Team.getTeam(player);
-
         team.setTeamName(name);
+
+        this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.RENAME, player, player.getLocation(), Map.of("new_name", name));
         team.updateHologram();
         player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.tags.changed").replace("{TEAM}", name)));
     }

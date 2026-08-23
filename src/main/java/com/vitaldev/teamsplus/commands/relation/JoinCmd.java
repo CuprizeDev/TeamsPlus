@@ -58,8 +58,10 @@ public class JoinCmd extends SubCmd {
 
                     player.sendMessage(langHandler.getMessage("messages.join.joined")
                             .replace("{TEAM}", teamName));
+
                     team.addMember(player, PlayerRank.MEMBER);
                     team.removeInvite(player);
+                    this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.JOIN, player, player.getLocation(), null);
                 } else {
                     player.sendMessage(langHandler.getMessage("messages.join.not-invited"));
                 }

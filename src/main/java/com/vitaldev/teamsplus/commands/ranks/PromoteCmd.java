@@ -2,6 +2,8 @@ package com.vitaldev.teamsplus.commands.ranks;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.teamsplus.features.permissions.PlayerRank;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
@@ -43,36 +45,13 @@ public class PromoteCmd extends SubCmd {
         Player target = Bukkit.getPlayer(args[1]);
         Team team = Team.getTeam(player);
 
-        if (!Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(args[1]))) {
+        if (!team.canDo(player, PermissableAction.PROMOTE) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(langHandler.getMessage("messages.permissions.denied"));
+            return;
+        }
 
-            OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(args[1]);
-            PlayerRank playerRank = team.getPlayerRank(offlineTarget.getUniqueId());
-
-            if (!offlineTarget.hasPlayedBefore()) {
-                sender.sendMessage(langHandler.getMessage("messages.offline-player"));
-                return;
-            }
-
-            if (!team.isMember(offlineTarget.getUniqueId())) {
-                player.sendMessage(langHandler.getMessage("messages.not-in-team")
-                        .replace("{PLAYER}", Objects.requireNonNull(offlineTarget.getName())));
-                return;
-            }
-            team.promote(offlineTarget.getPlayer());
-
-            player.sendMessage(langHandler.getMessage("messages.promote.sent")
-                    .replace("{RANK}", playerRank.getDisplayName())
-                    .replace("{PLAYER}", target.getName()));
-            target.sendMessage(langHandler.getMessage("messages.promote.received")
-                    .replace("{RANK}", playerRank.getDisplayName()));
-        } else {
-
+        if (target != null && target.isOnline()) {
             PlayerRank playerRank = team.getPlayerRank(target.getUniqueId());
-
-            if (target == null) {
-                sender.sendMessage(langHandler.getMessage("messages.offline-player"));
-                return;
-            }
 
             if (target == player) {
                 player.sendMessage(langHandler.getMessage("messages.promote.cant-promote-self"));
@@ -100,6 +79,26 @@ public class PromoteCmd extends SubCmd {
                     .replace("{PLAYER}", target.getName()));
             target.sendMessage(langHandler.getMessage("messages.promote.received")
                     .replace("{RANK}", playerRank.getDisplayName()));
+        } else {
+            OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(args[1]);
+
+            if (!offlineTarget.hasPlayedBefore()) {
+                sender.sendMessage(langHandler.getMessage("messages.offline-player"));
+                return;
+            }
+
+            if (!team.isMember(offlineTarget.getUniqueId())) {
+                player.sendMessage(langHandler.getMessage("messages.not-in-team")
+                        .replace("{PLAYER}", Objects.requireNonNull(offlineTarget.getName())));
+                return;
+            }
+            
+            PlayerRank playerRank = team.getPlayerRank(offlineTarget.getUniqueId());
+            team.promote(offlineTarget.getUniqueId());
+
+            player.sendMessage(langHandler.getMessage("messages.promote.sent")
+                    .replace("{RANK}", playerRank.getDisplayName())
+                    .replace("{PLAYER}", offlineTarget.getName()));
         }
     }
 }

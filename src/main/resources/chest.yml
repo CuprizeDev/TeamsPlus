@@ -17,6 +17,13 @@ chest:
       lore:
         - ""
       glow: false
+    back:
+      material: ARROW
+      name: "&e&lBACK"
+      amount: 1
+      lore:
+        - ""
+      glow: false
     items:
       shield:
         material: CLOCK
@@ -33,7 +40,7 @@ chest:
         lore:
           - ""
         glow: false
-        slot: 22
+        slot: 21
       upgrades:
         material: EXPERIENCE_BOTTLE
         name: "&a&lUpgrades"
@@ -41,7 +48,7 @@ chest:
         lore:
           - ""
         glow: false
-        slot: 24
+        slot: 22
       claims:
         material: GRASS_BLOCK
         name: "&2&lClaims"
@@ -49,4 +56,36 @@ chest:
         lore:
           - ""
         glow: false
-        slot: 25
+        slot: 23
+      boosts:
+        material: BEACON
+        name: "&c&lBoosts"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 24
+      permissions:
+        material: WRITABLE_BOOK
+        name: "&3&lPermissions"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 30
+      stats:
+        material: NETHER_STAR
+        name: "&b&lStats"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 31
+      logs:
+        material: PAPER
+        name: "&5&lLogs"
+        amount: 1
+        lore:
+          - ""
+        glow: false
+        slot: 32

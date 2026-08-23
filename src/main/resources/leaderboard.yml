@@ -1,0 +1,56 @@
+leaderboard:
+  settings:
+    scan-interval-seconds: 900
+    chunks-per-second: 10
+    ignored-worlds:
+      - "world_the_end"
+      - "world_nether"
+  
+  spawners:
+    ZOMBIE: 1
+    SKELETON: 1
+    SPIDER: 2
+    CAVE_SPIDER: 3
+    CREEPER: 5
+    BLAZE: 10
+    IRON_GOLEM: 50
+    VILLAGER: 100
+    PIG: 1
+
+  menu:
+    title: '&8Leaderboard'
+    size: 54
+    filler:
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      amount: 1
+      lore:
+        - ""
+      glow: true
+    close:
+      material: BARRIER
+      name: "&c&lCLOSE"
+      amount: 1
+      lore:
+        - ""
+      glow: false
+    team-format:
+      material: BEACON
+      name: "&b&l#{RANK} &7- &a{TEAM}"
+      lore:
+        - "&7Leader: &f{LEADER}"
+        - "&7Members: &f{MEMBERS}"
+        - ""
+        - "&7Power: &e{POWER}"
+      glow: true
+    slots:
+      - 13
+      - 21
+      - 22
+      - 23
+      - 29
+      - 30
+      - 31
+      - 32
+      - 33
+      - 40

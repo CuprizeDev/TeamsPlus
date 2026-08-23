@@ -3,18 +3,26 @@ package com.vitaldev.teamsplus.features.artifacts.listeners;
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
 import com.vitaldev.teamsplus.model.Team;
-import com.vitaldev.vitallibs.config.ConfigHandler;
-import org.bukkit.GameMode;
-import org.bukkit.entity.EntityType;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+public class BeaconListener implements Listener {
 
-public class BeaconListener {
+    public BeaconListener(TeamsPlus plugin) {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (Team team : Team.getTeamList().stream().map(Team::getTeam).filter(t -> t != null && t.hasArtifactApplied(ArtifactType.BEACON)).toList()) {
+                for (Player player : team.getOnlineMembers()) {
+                    if (!team.isInClaim(player)) {
+                        continue;
+                    }
+
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80, 0, true, false, true));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 80, 0, true, false, true));
+                }
+            }
+        }, 20L, 20L);
+    }
 }

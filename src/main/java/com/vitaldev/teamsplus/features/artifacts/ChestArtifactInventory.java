@@ -1,12 +1,11 @@
-package com.vitaldev.teamsplus.inventories.chest;
+package com.vitaldev.teamsplus.features.artifacts;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.features.chest.ChestMenuInventory;
 import com.vitaldev.teamsplus.model.Team;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactDefinition;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactItemBuilder;
 import com.vitaldev.teamsplus.features.upgrades.UpgradeType;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactManager;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.inventory.InventoryBuilder;
 import com.vitaldev.vitallibs.items.ItemHandler;
@@ -16,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ChestArtifactInventory {
@@ -50,6 +50,7 @@ public class ChestArtifactInventory {
     public void setupMenu() {
         String fillerPath = "artifacts.menu.filler";
         String closePath = "artifacts.menu.close";
+        String backPath = "artifacts.menu.back";
 
         ItemStack filler = ItemHandler.buildItem(
                 Objects.requireNonNull(Material.getMaterial(artifactHandler.getString(fillerPath + ".material"))),
@@ -57,6 +58,15 @@ public class ChestArtifactInventory {
                 artifactHandler.getInt(fillerPath + ".amount"),
                 artifactHandler.getStringList(fillerPath + ".lore"),
                 artifactHandler.getBoolean(fillerPath + ".glow"),
+                true
+        );
+
+        ItemStack backButton = ItemHandler.buildItem(
+                Objects.requireNonNull(Material.getMaterial(artifactHandler.getString(backPath + ".material"))),
+                artifactHandler.getMessage(backPath + ".name"),
+                artifactHandler.getInt(backPath + ".amount"),
+                artifactHandler.getStringList(backPath + ".lore"),
+                artifactHandler.getBoolean(backPath + ".glow"),
                 true
         );
 
@@ -70,6 +80,11 @@ public class ChestArtifactInventory {
         );
 
         setupItems();
+
+        builder.setBackButton(backButton, event -> {
+            event.setCancelled(true);
+            new ChestMenuInventory(plugin, player).openInventory();
+        });
 
         builder.setCloseButton(closeButton, event -> {
             event.setCancelled(true);
@@ -131,6 +146,11 @@ public class ChestArtifactInventory {
 
                 event.setCancelled(true);
 
+                if (!team.canDo(player, PermissableAction.ARTIFACTS) && !BypassCmd.isBypassing(player)) {
+                    player.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color(plugin.getLangFile().getString("messages.permissions.denied")));
+                    return;
+                }
+
                 if (team.getArtifacts().containsValue(slot)) {
                     handleArtifactRemoval(event, slot, team, builder, artifactBuilder);
                 } else {
@@ -166,6 +186,8 @@ public class ChestArtifactInventory {
         event.setCursor(artifactBuilder.buildArtifact(team.getArtifactFromSlot(slot)));
         team.clearSlot(slot);
         builder.setItem(slot, emptyItem);
+
+        plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.ARTIFACT_REMOVE, player, player.getLocation(), Map.of("artifact", def.getType().name().toLowerCase()));
     }
 
     private void handleArtifactAddition(InventoryClickEvent event, int slot, Team team,
@@ -192,6 +214,8 @@ public class ChestArtifactInventory {
 
             event.setCursor(new ItemStack(Material.AIR));
             builder.setItem(slot, artifactBuilder.buildArtifact(type));
+
+            plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.ARTIFACT_ADD, player, player.getLocation(), Map.of("artifact", def.getType().name().toLowerCase()));
         } else {
             player.sendMessage(
                     langHandler.getMessage("messages.artifacts.already-applied"));

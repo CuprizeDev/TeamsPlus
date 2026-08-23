@@ -1,6 +1,14 @@
 package com.vitaldev.teamsplus.features.artifacts;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BeaconListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BeastBaneListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BeastForgeListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BloomStoneListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.HasteListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.InquisitiveListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.SmelterListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.VerdantListener;
 import com.vitaldev.teamsplus.features.artifacts.listeners.AerialListener;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.items.NBTHandler;
@@ -14,11 +22,12 @@ import java.util.*;
 public class ArtifactManager {
 
     private final TeamsPlus plugin;
-    private final ConfigHandler artifactHandler;
+    private ConfigHandler artifactHandler;
     private final NBTHandler nbtHandler;
 
     private final Map<ArtifactType, ArtifactDefinition> definitions =
             new EnumMap<>(ArtifactType.class);
+    private boolean listenersRegistered = false;
 
     public ArtifactManager(TeamsPlus plugin) {
         this.plugin = plugin;
@@ -72,7 +81,30 @@ public class ArtifactManager {
             );
             definitions.put(type, definition);
         }
-        Bukkit.getServer().getPluginManager().registerEvents(new AerialListener(this.plugin), plugin);
+        registerListeners();
+    }
+
+    public void reload() {
+        this.artifactHandler = plugin.getArtifacts();
+        loadDefinitions();
+    }
+
+    private void registerListeners() {
+        if (listenersRegistered) {
+            return;
+        }
+
+        var pluginManager = Bukkit.getServer().getPluginManager();
+        pluginManager.registerEvents(new AerialListener(this.plugin), plugin);
+        pluginManager.registerEvents(new SmelterListener(this.plugin), plugin);
+        pluginManager.registerEvents(new VerdantListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BloomStoneListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BeaconListener(this.plugin), plugin);
+        pluginManager.registerEvents(new HasteListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BeastBaneListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BeastForgeListener(this.plugin), plugin);
+        pluginManager.registerEvents(new InquisitiveListener(this.plugin), plugin);
+        listenersRegistered = true;
     }
 
     public ArtifactDefinition get(ArtifactType type) {
@@ -87,7 +119,12 @@ public class ArtifactManager {
         if (!isArtifact(item)) return null;
 
         try {
-            ArtifactType type = ArtifactType.valueOf(nbtHandler.getString(item, nbtHandler.getKey() + "artifact_type").toUpperCase());
+            String rawType = nbtHandler.getString(item, nbtHandler.getKey() + "artifact_type");
+            if (rawType == null) {
+                return null;
+            }
+
+            ArtifactType type = ArtifactType.valueOf(rawType.toUpperCase().replace("-", "_"));
             return isRegistered(type) ? type : null;
         } catch (IllegalArgumentException ex) {
             return null;

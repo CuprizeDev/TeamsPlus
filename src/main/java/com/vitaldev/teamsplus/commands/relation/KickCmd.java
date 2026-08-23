@@ -2,6 +2,8 @@ package com.vitaldev.teamsplus.commands.relation;
 
 import com.vitaldev.teamsplus.TeamsPlus;
 import com.vitaldev.teamsplus.commands.SubCmd;
+import com.vitaldev.teamsplus.commands.BypassCmd;
+import com.vitaldev.teamsplus.features.permissions.PermissableAction;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.util.ConsoleUtil;
@@ -11,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 public class KickCmd extends SubCmd {
@@ -42,6 +45,11 @@ public class KickCmd extends SubCmd {
         Player target = Bukkit.getPlayer(args[1]);
         Team team = Team.getTeam(player);
 
+        if (!team.canDo(player, PermissableAction.KICK) && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(langHandler.getMessage("messages.permissions.denied"));
+            return;
+        }
+
         if (!Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(args[1]))) {
 
             OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(args[1]);
@@ -60,6 +68,8 @@ public class KickCmd extends SubCmd {
             player.sendMessage(langHandler.getMessage("messages.kick.sent")
                     .replace("{PLAYER}", Objects.requireNonNull(offlineTarget.getName())));
             team.removeMember(Objects.requireNonNull(offlineTarget.getPlayer()));
+
+            this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.KICK, player, player.getLocation(), Map.of("target", offlineTarget.getName()));
 
         } else {
 
@@ -83,6 +93,8 @@ public class KickCmd extends SubCmd {
             target.sendMessage(langHandler.getMessage("messages.kick.received")
                     .replace("{TEAM}", team.getTeamName()));
             team.removeMember(target);
+
+            this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.KICK, player, player.getLocation(), Map.of("target", target.getName()));
 
         }
     }

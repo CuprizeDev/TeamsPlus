@@ -1,9 +1,6 @@
-package com.vitaldev.teamsplus.commands;
+package com.vitaldev.teamsplus.features.artifacts;
 
 import com.vitaldev.teamsplus.TeamsPlus;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactDefinition;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactManager;
-import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
 import com.vitaldev.vitallibs.commands.CommandBuilder;
 import com.vitaldev.vitallibs.commands.CommandUtil;
 import com.vitaldev.vitallibs.config.ConfigHandler;

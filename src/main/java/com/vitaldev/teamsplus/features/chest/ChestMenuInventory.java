@@ -1,6 +1,14 @@
-package com.vitaldev.teamsplus.inventories.chest;
+package com.vitaldev.teamsplus.features.chest;
 
 import com.vitaldev.teamsplus.TeamsPlus;
+import com.vitaldev.teamsplus.features.artifacts.ChestArtifactInventory;
+import com.vitaldev.teamsplus.features.boosters.ChestBoosterInventory;
+import com.vitaldev.teamsplus.features.logs.ChestLogMenuInventory;
+import com.vitaldev.teamsplus.features.permissions.ChestPermissionInventory;
+import com.vitaldev.teamsplus.features.shield.ChestShieldInventory;
+import com.vitaldev.teamsplus.features.stats.ChestStatMenuInventory;
+import com.vitaldev.teamsplus.features.stats.ChestTeamStatsInventory;
+import com.vitaldev.teamsplus.features.upgrades.ChestUpgradeInventory;
 import com.vitaldev.teamsplus.model.Team;
 import com.vitaldev.vitallibs.config.ConfigHandler;
 import com.vitaldev.vitallibs.inventory.InventoryBuilder;
@@ -92,11 +100,27 @@ public class ChestMenuInventory {
                 }
 
                 if (item.equals("shield")) {
+                    new ChestShieldInventory(plugin, player).openInventory();
+                }
 
+                if (item.equals("permissions")) {
+                    new ChestPermissionInventory(plugin, player).openInventory();
+                }
+
+                if (item.equals("logs")) {
+                    new ChestLogMenuInventory(plugin, player).openInventory();
+                }
+
+                if (item.equals("boosts")) {
+                    new ChestBoosterInventory(plugin, player).openInventory();
                 }
 
                 if (item.equals("claims")) {
                     new ChestClaimInventory(plugin, player).openInventory();
+                }
+
+                if (item.equals("stats")) {
+                    new ChestTeamStatsInventory(plugin, player).openInventory();
                 }
 
             });

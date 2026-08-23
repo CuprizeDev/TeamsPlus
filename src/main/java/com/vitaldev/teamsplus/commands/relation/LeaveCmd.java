@@ -50,6 +50,7 @@ public class LeaveCmd extends SubCmd {
         }
 
         team.removeMember(player);
+        this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.LEAVE, player, player.getLocation(), null);
         player.sendMessage(langHandler.getMessage("messages.leave.leave").replace("{TEAM}", team.getTeamName()));
 
     }
