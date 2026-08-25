@@ -119,8 +119,14 @@ public class ChestListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.chest.placed")));
             Team team = new Team(plugin, player.getName() + "'s Team", player.getUniqueId(), UUID.randomUUID(), event.getBlockPlaced().getLocation());
+            com.vitaldev.teamsplus.events.TeamCreateEvent createEvent = new com.vitaldev.teamsplus.events.TeamCreateEvent(player, team.getTeamName(), team);
+            org.bukkit.Bukkit.getPluginManager().callEvent(createEvent);
+            if (createEvent.isCancelled()) {
+                event.setCancelled(true);
+                return;
+            }
+            player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.chest.placed")));
             teamData.saveTeam(team);
             nbtHandler.addBoolean(event.getBlockPlaced(), nbtHandler.getKey() + "claim_chest", true);
             Team.addUUID(team.getTeamUUID(), team);

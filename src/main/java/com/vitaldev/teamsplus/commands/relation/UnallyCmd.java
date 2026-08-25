@@ -62,9 +62,13 @@ public class UnallyCmd extends SubCmd {
                     return;
                 }
 
+                com.vitaldev.teamsplus.events.TeamUnallyEvent unallyEvent = new com.vitaldev.teamsplus.events.TeamUnallyEvent(player, team, targetTeam);
+                org.bukkit.Bukkit.getPluginManager().callEvent(unallyEvent);
+                if (unallyEvent.isCancelled()) return;
+
                 player.sendMessage(langHandler.getMessage("messages.ally.removed"));
-                targetTeam.removeAlly(teamUUID);
-                team.removeAlly(teamUUID);
+                targetTeam.removeAlly(team.getTeamUUID());
+                team.removeAlly(targetTeam.getTeamUUID());
 
                 this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.ALLY_REMOVE, player, player.getLocation(), Map.of("ally", targetTeam.getTeamName()));
                 this.plugin.getLogManager().logEvent(targetTeam, com.vitaldev.teamsplus.features.logs.LogType.ALLY_REMOVE, null, null, Map.of("ally", team.getTeamName()));

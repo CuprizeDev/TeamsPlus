@@ -39,6 +39,10 @@ public class DisbandCmd extends SubCmd {
             return;
         }
 
+        com.vitaldev.teamsplus.events.TeamDisbandEvent disbandEvent = new com.vitaldev.teamsplus.events.TeamDisbandEvent(player, team);
+        org.bukkit.Bukkit.getPluginManager().callEvent(disbandEvent);
+        if (disbandEvent.isCancelled()) return;
+
         Team.disbandTeam(team, plugin);
         player.sendMessage(langHandler.getMessage("messages.disband"));
 

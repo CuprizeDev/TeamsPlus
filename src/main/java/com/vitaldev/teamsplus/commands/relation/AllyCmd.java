@@ -77,6 +77,10 @@ public class AllyCmd extends SubCmd {
                 }
 
                 if (targetTeam.getAllyRequests().contains(team.getTeamUUID())) {
+                    com.vitaldev.teamsplus.events.TeamAllyEvent allyEvent = new com.vitaldev.teamsplus.events.TeamAllyEvent(player, team, targetTeam);
+                    org.bukkit.Bukkit.getPluginManager().callEvent(allyEvent);
+                    if (allyEvent.isCancelled()) return;
+
                     team.sendMessage(langHandler.getMessage("messages.ally.allied")
                             .replace("{TEAM}", targetTeam.getTeamName()));
                     targetTeam.sendMessage(langHandler.getMessage("messages.ally.allied")

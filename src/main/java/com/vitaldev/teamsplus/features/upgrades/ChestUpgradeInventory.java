@@ -145,7 +145,12 @@ public class ChestUpgradeInventory {
             return;
         }
 
-        team.setUpgradeLevel(UpgradeType.valueOf(upgrade.toUpperCase()), level + 1);
+        UpgradeType type = UpgradeType.valueOf(upgrade.toUpperCase());
+        com.vitaldev.teamsplus.events.TeamUpgradeEvent upgradeEvent = new com.vitaldev.teamsplus.events.TeamUpgradeEvent(player, team, type, level, level + 1);
+        org.bukkit.Bukkit.getPluginManager().callEvent(upgradeEvent);
+        if (upgradeEvent.isCancelled()) return;
+
+        team.setUpgradeLevel(type, level + 1);
         plugin.getEcon().withdrawPlayer(player, nextLevelCost);
         player.sendMessage(langHandler.getMessage("messages.upgrades.upgraded")
                 .replace("{LEVEL}", String.valueOf(level + 1))

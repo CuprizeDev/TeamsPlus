@@ -73,6 +73,11 @@ public class PromoteCmd extends SubCmd {
                 return;
             }
 
+            PlayerRank newRank = PlayerRank.getRankFromValue(playerRank.getValue() + 1);
+            com.vitaldev.teamsplus.events.TeamPromoteEvent promoteEvent = new com.vitaldev.teamsplus.events.TeamPromoteEvent(player, target, team, playerRank, newRank);
+            org.bukkit.Bukkit.getPluginManager().callEvent(promoteEvent);
+            if (promoteEvent.isCancelled()) return;
+
             team.promote(target);
             player.sendMessage(langHandler.getMessage("messages.promote.sent")
                     .replace("{RANK}", playerRank.getDisplayName())
@@ -94,6 +99,12 @@ public class PromoteCmd extends SubCmd {
             }
             
             PlayerRank playerRank = team.getPlayerRank(offlineTarget.getUniqueId());
+            
+            PlayerRank newRank = PlayerRank.getRankFromValue(playerRank.getValue() + 1);
+            com.vitaldev.teamsplus.events.TeamPromoteEvent promoteEvent = new com.vitaldev.teamsplus.events.TeamPromoteEvent(player, offlineTarget, team, playerRank, newRank);
+            org.bukkit.Bukkit.getPluginManager().callEvent(promoteEvent);
+            if (promoteEvent.isCancelled()) return;
+
             team.promote(offlineTarget.getUniqueId());
 
             player.sendMessage(langHandler.getMessage("messages.promote.sent")

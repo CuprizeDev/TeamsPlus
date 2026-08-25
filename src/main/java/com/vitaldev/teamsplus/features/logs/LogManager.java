@@ -94,6 +94,10 @@ public class LogManager {
                 metadata
         );
         
-        team.addLog(entry);
+        com.vitaldev.teamsplus.events.TeamLogEvent logEvent = new com.vitaldev.teamsplus.events.TeamLogEvent(team, entry);
+        org.bukkit.Bukkit.getPluginManager().callEvent(logEvent);
+        if (logEvent.isCancelled()) return;
+
+        team.addLog(logEvent.getLogEntry());
     }
 }

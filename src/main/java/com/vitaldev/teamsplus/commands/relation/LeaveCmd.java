@@ -49,6 +49,10 @@ public class LeaveCmd extends SubCmd {
             return;
         }
 
+        com.vitaldev.teamsplus.events.TeamLeaveEvent leaveEvent = new com.vitaldev.teamsplus.events.TeamLeaveEvent(player, team);
+        org.bukkit.Bukkit.getPluginManager().callEvent(leaveEvent);
+        if (leaveEvent.isCancelled()) return;
+
         team.removeMember(player);
         this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.LEAVE, player, player.getLocation(), null);
         player.sendMessage(langHandler.getMessage("messages.leave.leave").replace("{TEAM}", team.getTeamName()));

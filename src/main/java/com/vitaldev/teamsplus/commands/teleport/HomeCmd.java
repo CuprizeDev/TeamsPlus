@@ -54,7 +54,11 @@ public class HomeCmd extends SubCmd {
         player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.home.commence").replace("{TIME}",String.valueOf(cooldown))));
 
         taskUtil.scheduleTask(player, "teleport", () -> {
-            player.teleport(claimChestLocation);
+            com.vitaldev.teamsplus.events.TeamWarpEvent warpEvent = new com.vitaldev.teamsplus.events.TeamWarpEvent(player, team, claimChestLocation);
+            org.bukkit.Bukkit.getPluginManager().callEvent(warpEvent);
+            if (warpEvent.isCancelled()) return;
+
+            player.teleport(warpEvent.getLocation());
             player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.home.success")));
         }, cooldown);
     }

@@ -62,6 +62,10 @@ public class UninviteCmd extends SubCmd {
                 return;
             }
 
+            com.vitaldev.teamsplus.events.TeamUninviteEvent uninviteEvent = new com.vitaldev.teamsplus.events.TeamUninviteEvent(player, offlineTarget, team);
+            org.bukkit.Bukkit.getPluginManager().callEvent(uninviteEvent);
+            if (uninviteEvent.isCancelled()) return;
+
             team.removeInvite(offlineTarget.getUniqueId());
             this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_REMOVE, player, player.getLocation(), Map.of("target", offlineTarget.getName()));
             player.sendMessage(langHandler.getMessage("messages.invite.removed")
@@ -81,6 +85,10 @@ public class UninviteCmd extends SubCmd {
                         .replace("{PLAYER}", target.getName()));
                 return;
             }
+
+            com.vitaldev.teamsplus.events.TeamUninviteEvent uninviteEvent = new com.vitaldev.teamsplus.events.TeamUninviteEvent(player, target, team);
+            org.bukkit.Bukkit.getPluginManager().callEvent(uninviteEvent);
+            if (uninviteEvent.isCancelled()) return;
 
             team.removeInvite(target);
             this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_REMOVE, player, player.getLocation(), Map.of("target", target.getName()));

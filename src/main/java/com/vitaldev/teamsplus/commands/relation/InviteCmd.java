@@ -72,6 +72,10 @@ public class InviteCmd extends SubCmd {
                 return;
             }
 
+            com.vitaldev.teamsplus.events.TeamInviteEvent inviteEvent = new com.vitaldev.teamsplus.events.TeamInviteEvent(player, target, team);
+            org.bukkit.Bukkit.getPluginManager().callEvent(inviteEvent);
+            if (inviteEvent.isCancelled()) return;
+
             team.addInvite(target);
 
             this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_ADD, player, player.getLocation(), Map.of("target", target.getName()));
@@ -99,7 +103,11 @@ public class InviteCmd extends SubCmd {
                 return;
             }
 
-            team.addInvite(offlineTarget.getUniqueId());;
+            com.vitaldev.teamsplus.events.TeamInviteEvent inviteEvent = new com.vitaldev.teamsplus.events.TeamInviteEvent(player, offlineTarget, team);
+            org.bukkit.Bukkit.getPluginManager().callEvent(inviteEvent);
+            if (inviteEvent.isCancelled()) return;
+
+            team.addInvite(offlineTarget.getUniqueId());
             this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.INVITE_ADD, player, player.getLocation(), Map.of("target", offlineTarget.getName()));
             player.sendMessage(langHandler.getMessage("messages.invite.sent")
                     .replace("{PLAYER}", offlineTarget.getName()));

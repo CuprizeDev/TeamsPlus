@@ -74,7 +74,11 @@ public class NameCmd extends SubCmd {
             return;
         }
 
-        team.setTeamName(name);
+        com.vitaldev.teamsplus.events.TeamNameEvent nameEvent = new com.vitaldev.teamsplus.events.TeamNameEvent(player, team, team.getTeamName(), name);
+        org.bukkit.Bukkit.getPluginManager().callEvent(nameEvent);
+        if (nameEvent.isCancelled()) return;
+
+        team.setTeamName(nameEvent.getNewName());
 
         this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.RENAME, player, player.getLocation(), Map.of("new_name", name));
         team.updateHologram();

@@ -56,6 +56,10 @@ public class JoinCmd extends SubCmd {
                         return;
                     }
 
+                    com.vitaldev.teamsplus.events.TeamJoinEvent joinEvent = new com.vitaldev.teamsplus.events.TeamJoinEvent(player, team);
+                    org.bukkit.Bukkit.getPluginManager().callEvent(joinEvent);
+                    if (joinEvent.isCancelled()) return;
+
                     player.sendMessage(langHandler.getMessage("messages.join.joined")
                             .replace("{TEAM}", teamName));
 
