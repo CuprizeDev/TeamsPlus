@@ -67,7 +67,7 @@ public class KickCmd extends SubCmd {
 
             player.sendMessage(langHandler.getMessage("messages.kick.sent")
                     .replace("{PLAYER}", Objects.requireNonNull(offlineTarget.getName())));
-            team.removeMember(Objects.requireNonNull(offlineTarget.getPlayer()));
+            team.removeMember(offlineTarget.getUniqueId());
 
             this.plugin.getLogManager().logEvent(team, com.vitaldev.teamsplus.features.logs.LogType.KICK, player, player.getLocation(), Map.of("target", offlineTarget.getName()));
 

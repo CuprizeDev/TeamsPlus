@@ -21,13 +21,13 @@ public class ChestLogMenuInventory {
     private final InventoryBuilder builder;
     private final ConfigHandler langHandler;
 
-    public ChestLogMenuInventory(TeamsPlus plugin, Player player) {
+    public ChestLogMenuInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.logConfig = plugin.getLogManager().getConfig();
         this.langHandler = plugin.getLangFile();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
-        this.builder = new InventoryBuilder(logConfig.getInt("logs.menu-categories.size"),
+        this.builder = new InventoryBuilder(54,
                 logConfig.getMessage("logs.menu-categories.title").replace("{TEAM}", team.getTeamName()), true);
     }
 
@@ -73,7 +73,7 @@ public class ChestLogMenuInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         builder.setCloseButton(closeButton, event -> {
@@ -112,7 +112,7 @@ public class ChestLogMenuInventory {
 
             builder.addItem(innerSlots[i], categoryItem, event -> {
                 event.setCancelled(true);
-                new ChestLogInventory(plugin, player, type).openInventory();
+                new ChestLogInventory(plugin, player, team, type).openInventory();
             });
         }
     }

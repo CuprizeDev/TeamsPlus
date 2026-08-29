@@ -81,4 +81,35 @@ public class RoseStackerHook implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPreSpawnerSpawn(dev.rosewood.rosestacker.event.PreStackedSpawnerSpawnEvent event) {
+        Block block = event.getStack().getBlock();
+        Chunk chunk = block.getChunk();
+
+        if (Team.isClaimed(chunk)) {
+            UUID teamUUID = Team.getClaim(chunk);
+            Team team = Team.getTeam(teamUUID);
+            if (team != null) {
+                int currentAmount = event.getSpawnAmount();
+                double multiplier = 1.0;
+
+                // Spawner Upgrade (+X%)
+                int upgradeEffect = team.getUpgradeEffect(com.vitaldev.teamsplus.features.upgrades.UpgradeType.SPAWNER);
+                if (upgradeEffect > 0) {
+                    multiplier += (upgradeEffect / 100.0);
+                }
+
+                // Spawner Booster (e.g. 2.0x)
+                if (team.hasActiveBooster(com.vitaldev.teamsplus.features.boosters.BoosterType.SPAWNER_RATE)) {
+                    multiplier += (team.getActiveBooster(com.vitaldev.teamsplus.features.boosters.BoosterType.SPAWNER_RATE).getMultiplier() - 1.0);
+                }
+
+                if (multiplier > 1.0) {
+                    int newAmount = (int) Math.round(currentAmount * multiplier);
+                    event.setSpawnAmount(newAmount);
+                }
+            }
+        }
+    }
 }

@@ -69,7 +69,7 @@ public class NameCmd extends SubCmd {
             return;
         }
 
-        if (!ChatUtil.isStringWithinLength(name, plugin.getConfig().getInt("teams.name.minimum"), plugin.getConfig().getInt("teams.name.maximum"))) {
+        if (!ChatUtil.isStringWithinLength(name, plugin.getConfigFile().getInt("teams.name.minimum"), plugin.getConfigFile().getInt("teams.name.maximum"))) {
             player.sendMessage(ChatUtil.color(langHandler.getMessage("messages.tags.within-length")));
             return;
         }

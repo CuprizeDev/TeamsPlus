@@ -18,6 +18,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import com.vitaldev.teamsplus.features.artifacts.listeners.VampiricListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.ArachnidListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.AdrenalineListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BlastShieldListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.GravityListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.VitalityListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.WarHornListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.BloodhoundListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.RadarListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.TrueSightListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.ToxicAuraListener;
+import com.vitaldev.teamsplus.features.artifacts.listeners.RepulsorListener;
 
 public class ArtifactManager {
 
@@ -104,6 +116,19 @@ public class ArtifactManager {
         pluginManager.registerEvents(new BeastBaneListener(this.plugin), plugin);
         pluginManager.registerEvents(new BeastForgeListener(this.plugin), plugin);
         pluginManager.registerEvents(new InquisitiveListener(this.plugin), plugin);
+                        pluginManager.registerEvents(new VampiricListener(this.plugin), plugin);
+        pluginManager.registerEvents(new ArachnidListener(this.plugin), plugin);
+        pluginManager.registerEvents(new AdrenalineListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BlastShieldListener(this.plugin), plugin);
+        pluginManager.registerEvents(new GravityListener(this.plugin), plugin);
+        pluginManager.registerEvents(new VitalityListener(this.plugin), plugin);
+        pluginManager.registerEvents(new WarHornListener(this.plugin), plugin);
+        pluginManager.registerEvents(new BloodhoundListener(this.plugin), plugin);
+        pluginManager.registerEvents(new RadarListener(this.plugin), plugin);
+        pluginManager.registerEvents(new TrueSightListener(this.plugin), plugin);
+        pluginManager.registerEvents(new ToxicAuraListener(this.plugin), plugin);
+        pluginManager.registerEvents(new RepulsorListener(this.plugin), plugin);
+
         listenersRegistered = true;
     }
 

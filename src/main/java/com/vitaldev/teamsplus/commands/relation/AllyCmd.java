@@ -49,6 +49,11 @@ public class AllyCmd extends SubCmd {
             return;
         }
 
+        if (!plugin.getConfigFile().getBoolean("teams.allies.enabled")) {
+            player.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color("&cAlliances are currently disabled on this server."));
+            return;
+        }
+
         for (UUID teamUUID : Team.getTeamList()) {
 
             Team targetTeam = Team.getTeam(teamUUID);
@@ -71,7 +76,7 @@ public class AllyCmd extends SubCmd {
                     return;
                 }
 
-                if (team.getAllyCount() >= plugin.getConfig().getInt("teams.allies.maximum")) {
+                if (team.getAllyCount() >= plugin.getConfigFile().getInt("teams.allies.maximum")) {
                     player.sendMessage(langHandler.getMessage("messages.ally.maximum-allies"));
                     return;
                 }

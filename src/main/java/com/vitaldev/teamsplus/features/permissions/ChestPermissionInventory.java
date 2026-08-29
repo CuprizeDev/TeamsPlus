@@ -40,18 +40,17 @@ public class ChestPermissionInventory {
 
     private int rankIndex = 0;
 
-    public ChestPermissionInventory(TeamsPlus plugin, Player player) {
+    public ChestPermissionInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.permHandler = plugin.getPermissionsFile();
         this.langHandler = plugin.getLangFile();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
 
         // The title is now more generic and doesn't include the rank.
         // This avoids having to re-create the inventory on rank change.
         // Assumes the title in permissions.yml is changed to something like "Team Permissions for {TEAM}"
-        this.builder = new InventoryBuilder(
-                permHandler.getInt("permissions.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 permHandler.getMessage("permissions.menu.title")
                         .replace("{TEAM}", team.getTeamName()),
                 false
@@ -99,7 +98,7 @@ public class ChestPermissionInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         builder.setCloseButton(closeButton, event -> {

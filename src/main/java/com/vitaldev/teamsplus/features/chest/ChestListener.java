@@ -50,7 +50,31 @@ public class ChestListener implements Listener {
             return;
         }
 
-        new ChestMenuInventory(plugin, event.getPlayer()).openInventory();
+        Team targetTeam = null;
+        for (UUID uuid : Team.getTeamList()) {
+            Team t = Team.getTeam(uuid);
+            if (t.getClaimChest() != null && t.getClaimChest().getBlock().getLocation().equals(block.getLocation())) {
+                targetTeam = t;
+                break;
+            }
+        }
+
+        if (targetTeam == null) {
+            event.getPlayer().sendMessage(plugin.getLangFile().getMessage("messages.chest.no-team-chest"));
+            event.setCancelled(true);
+            return;
+        }
+
+        Team playerTeam = Team.getTeam(event.getPlayer());
+        if (targetTeam != playerTeam) {
+            if (!com.vitaldev.teamsplus.commands.BypassCmd.isBypassing(event.getPlayer())) {
+                event.getPlayer().sendMessage(ChatUtil.color(plugin.getLangFile().getMessage("messages.chest.not-your-chest")));
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        new ChestMenuInventory(plugin, event.getPlayer(), targetTeam).openInventory();
         event.setCancelled(true);
 
 
@@ -60,25 +84,77 @@ public class ChestListener implements Listener {
     public void onChestBreak(BlockBreakEvent event) {
 
         Block block = event.getBlock();
-
-        if (block == null) {
-            return;
-        }
-
-        if (block.getType() != Material.CHEST) {
-            return;
-        }
+        if (block == null) return;
+        if (block.getType() != Material.CHEST) return;
 
         NBTHandler nbtHandler = new NBTHandler(plugin);
-
         if (!nbtHandler.getBoolean(block, nbtHandler.getKey() + "claim_chest")){
             return;
         }
 
-        Location location = block.getLocation();
+        Player player = event.getPlayer();
+        Team targetTeam = null;
+        for (UUID uuid : Team.getTeamList()) {
+            Team t = Team.getTeam(uuid);
+            if (t.getClaimChest() != null && t.getClaimChest().getBlock().getLocation().equals(block.getLocation())) {
+                targetTeam = t;
+                break;
+            }
+        }
 
-        location.getWorld().dropItemNaturally(location, new ChestItemBuilder(plugin).buildClaimChest());
+        if (targetTeam == null) {
+            Location location = block.getLocation();
+            location.getWorld().dropItemNaturally(location, new ChestItemBuilder(plugin).buildClaimChest());
+            return;
+        }
 
+        Team playerTeam = Team.getTeam(player);
+        if (playerTeam != null && playerTeam.getTeamUUID().equals(targetTeam.getTeamUUID())) {
+            if (!com.vitaldev.teamsplus.commands.BypassCmd.isBypassing(player)) {
+                player.sendMessage(ChatUtil.color(plugin.getLangFile().getMessage("messages.chest.cannot-break-own")));
+                event.setCancelled(true);
+                return;
+            } else {
+                Location location = block.getLocation();
+                location.getWorld().dropItemNaturally(location, new ChestItemBuilder(plugin).buildClaimChest());
+                return;
+            }
+        }
+
+        if (plugin.getRaidManager().isRaided(targetTeam)) {
+            com.vitaldev.teamsplus.features.raiding.RaidManager.RaidRecord raid = plugin.getRaidManager().getActiveRaid(targetTeam);
+            if (raid != null && playerTeam != null && playerTeam.getTeamUUID().equals(raid.attackerId)) {
+                if (targetTeam.getDurability() > 1) {
+                    targetTeam.setDurability(targetTeam.getDurability() - 1);
+                    targetTeam.updateHologram();
+                    String msg = plugin.getLangFile().getMessage("messages.chest.damaged-chest")
+                            .replace("{TEAM}", targetTeam.getTeamName())
+                            .replace("{DURABILITY}", String.valueOf(targetTeam.getDurability()));
+                    player.sendMessage(ChatUtil.color(msg));
+                    event.setCancelled(true);
+                } else {
+                    String msg = plugin.getLangFile().getMessage("messages.chest.destroyed-chest")
+                            .replace("{TEAM}", targetTeam.getTeamName());
+                    player.sendMessage(ChatUtil.color(msg));
+                    
+                    plugin.getRaidManager().endRaid(targetTeam);
+                    Team.disbandTeam(targetTeam, plugin);
+                    
+                    Location location = block.getLocation();
+                    location.getWorld().dropItemNaturally(location, new ChestItemBuilder(plugin).buildClaimChest());
+                }
+            } else {
+                if (!com.vitaldev.teamsplus.commands.BypassCmd.isBypassing(player)) {
+                    player.sendMessage(ChatUtil.color(plugin.getLangFile().getMessage("messages.chest.cannot-break-enemy")));
+                    event.setCancelled(true);
+                }
+            }
+        } else {
+            if (!com.vitaldev.teamsplus.commands.BypassCmd.isBypassing(player)) {
+                player.sendMessage(ChatUtil.color(plugin.getLangFile().getMessage("messages.chest.cannot-break-enemy")));
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler

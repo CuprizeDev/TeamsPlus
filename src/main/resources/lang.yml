@@ -115,6 +115,7 @@ messages:
     already-claimed: '&8[&5&l!&8] &cThis chunk has already been claimed by another team!'
     find: '&8[&5&l!&8] &7Chest Location: &5{X}x, {Y}y, {Z}z'
     must-place: '&8[&5&l!&8] &cYou must place a claim chest to create a team!'
+    not-your-chest: '&8[&5&l!&8] &cYou can only open your own team''s claim chest!'
   list:
     header: '&7&m----------&r&7[ &2Team List {PAGE-NUMBER}&7/&2{PAGE-COUNT} &7]&m----------'
     message: '&2{TEAM} &7- {ONLINE} / {MEMBERS} online, {POWER} power'
@@ -153,3 +154,60 @@ messages:
     auto-enabled: '&8[&b&l!&8] &aAuto shield has been &2enabled&a.'
     auto-disabled: '&8[&b&l!&8] &cAuto shield has been &4disabled&c.'
     on-cooldown: '&cYour team''s shield is on cooldown! Remaining: {TIME}'
+
+
+  general:
+    only-players: '&8[&5&l!&8] &cOnly players can use this command.'
+    feature-disabled: '&8[&5&l!&8] &cThat feature is currently disabled.'
+  raids:
+    disabled: '&8[&5&l!&8] &cThe raids feature is currently disabled.'
+    usage: '&8[&5&l!&8] &cUsage: /team raid start <defender> <attacker> OR /team raid end <defender>'
+    usage-start: '&8[&5&l!&8] &cUsage: /team raid start <defender> <attacker>'
+    usage-end: '&8[&5&l!&8] &cUsage: /team raid end <defender>'
+    defender-not-found: '&8[&5&l!&8] &cDefender team not found.'
+    attacker-not-found: '&8[&5&l!&8] &cAttacker team not found.'
+    already-raided: '&8[&5&l!&8] &cThat team is already being raided!'
+    shield-active: '&8[&5&l!&8] &cThat team currently has an active shield and cannot be raided!'
+    raid-started: '&8[&5&l!&8] &aStarted raid on {DEFENDER} by {ATTACKER}'
+    raid-ended: '&8[&5&l!&8] &aEnded raid on {DEFENDER}'
+    not-raided: '&8[&5&l!&8] &cThat team is not currently being raided.'
+    unknown-action: '&8[&5&l!&8] &cUnknown raid action. Use start or end.'
+    cannot-mine-spawner: '&8[&5&l!&8] &cYou cannot mine spawners during a raid!'
+    started:
+      - '&8&m----------&r&8< &4&lRAID ALERT &8>&m----------'
+      - '&c&lYour team is being raided by &e{ATTACKER}&c!'
+      - '&8&m--------------------------------------------'
+    started-attacker:
+      - '&8&m----------&r&8< &a&lRAID STARTED &8>&m----------'
+      - '&a&lYour team is now raiding &e{DEFENDER}&a!'
+      - '&8&m--------------------------------------------'
+    ended:
+      - '&8&m----------&r&8< &2&lRAID OVER &8>&m----------'
+      - '&aThe raid on your team has ended.'
+      - '&8&m--------------------------------------------'
+    ended-attacker:
+      - '&8&m----------&r&8< &2&lRAID OVER &8>&m----------'
+      - '&aYour raid on &e{DEFENDER} &ahas ended.'
+      - '&8&m--------------------------------------------'
+    periodic:
+      - '&8[&4&l!&8] &cYour team is being raided by &e{ATTACKER}&c! &7Time left: &e{TIME_LEFT}'
+    periodic-attacker:
+      - '&8[&a&l!&8] &aRaiding &e{DEFENDER}&a! &7Time left: &e{TIME_LEFT}'
+  warps:
+    disabled: '&8[&5&l!&8] &cThe warps feature is currently disabled.'
+    invalid-name: '&8[&5&l!&8] &cWarp name must be alphanumeric and less than 16 characters.'
+    max-warps: '&8[&5&l!&8] &cYour team has reached the maximum number of warps ({LIMIT}).'
+    warp-set: '&8[&5&l!&8] &aSuccessfully set team warp &b{WARP}&a at your location.'
+    warp-not-found: '&8[&5&l!&8] &cThat warp does not exist!'
+    warp-deleted: '&8[&5&l!&8] &cDeleted warp &b{WARP}&c.'
+  chest:
+    no-team-chest: '&8[&5&l!&8] &cThis claim chest does not belong to any team.'
+    cannot-break-own: '&8[&5&l!&8] &cYou cannot break your own claim chest! Use /team disband instead.'
+    cannot-break-enemy: '&8[&5&l!&8] &cYou can only damage an enemy claim chest during an active raid!'
+    damaged-chest: '&8[&5&l!&8] &eYou damaged &c{TEAM}''s&e claim chest! Remaining durability: &c{DURABILITY}'
+    destroyed-chest: '&8[&5&l!&8] &aYou have successfully destroyed &c{TEAM}''s&a claim chest! The team has been disbanded.'
+  alliance:
+    revoked-gui: '&8[&5&l!&8] &cRevoked alliance with {TEAM}.'
+    accepted-gui: '&8[&5&l!&8] &aAccepted alliance with {TEAM}!'
+  invite:
+    revoked-gui: '&8[&5&l!&8] &cRevoked invite for {PLAYER}.'

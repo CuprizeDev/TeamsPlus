@@ -15,6 +15,7 @@ public class TeamPlayer {
     private Team team;
     private final Player player;
     private boolean friendlyFireEnabled;
+    private boolean discordRaidAlertsEnabled = true;
     private final Map<StatType, Long> stats = new EnumMap<>(StatType.class);
 
     private TeamPlayer(Player player) {
@@ -54,6 +55,14 @@ public class TeamPlayer {
 
     public void setFriendlyFireEnabled(boolean friendlyFireEnabled) {
         this.friendlyFireEnabled = friendlyFireEnabled;
+    }
+
+    public boolean isDiscordRaidAlertsEnabled() {
+        return discordRaidAlertsEnabled;
+    }
+
+    public void setDiscordRaidAlertsEnabled(boolean enabled) {
+        this.discordRaidAlertsEnabled = enabled;
     }
 
     public void toggleFriendlyFire() {

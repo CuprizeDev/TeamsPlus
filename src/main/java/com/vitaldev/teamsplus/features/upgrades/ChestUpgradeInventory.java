@@ -26,14 +26,14 @@ public class ChestUpgradeInventory {
     private final Player player;
     private final InventoryBuilder builder;
 
-    public ChestUpgradeInventory(TeamsPlus plugin, Player player) {
+    public ChestUpgradeInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
 
         this.langHandler = plugin.getLangFile();
         this.upgradeHandler = plugin.getUpgrades();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
-        this.builder = new InventoryBuilder(upgradeHandler.getInt("upgrades.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 upgradeHandler.getMessage("upgrades.menu.title").replace("{TEAM}", team.getTeamName()), false);
     }
 
@@ -78,7 +78,7 @@ public class ChestUpgradeInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         setupItems();

@@ -21,7 +21,7 @@ public class LogManager {
 
     public LogManager(TeamsPlus plugin) {
         this.plugin = plugin;
-        this.logConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "logs.yml"));
+        this.logConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/logs.yml"));
         loadDefinitions();
     }
 
@@ -64,7 +64,7 @@ public class LogManager {
     }
 
     public void reload() {
-        this.logConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "logs.yml"));
+        this.logConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/logs.yml"));
         loadDefinitions();
     }
 

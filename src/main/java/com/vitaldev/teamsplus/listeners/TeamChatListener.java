@@ -27,27 +27,55 @@ public class TeamChatListener implements Listener {
         Team team = Team.getTeam(player);
 
         // getTeam and isTeamChatEnabled use read-only maps — safe to call here
-        if (team == null || !team.isTeamChatEnabled(player)) return;
+        if (team == null) return;
+        
+        if (team.isTeamChatEnabled(player)) {
+            ConfigHandler langHandler = this.plugin.getLangFile();
+            String messageTemplate = langHandler.getMessage("messages.chat.team-chat")
+                    .replace("{TEAM}", team.getTeamName())
+                    .replace("{PLAYER}", player.getName())
+                    .replace("{MESSAGE}", event.getMessage());
+            Set<UUID> memberSnapshot = team.getMembers();
 
-        // Capture all state while still on the async thread (immutable primitives / copies)
-        ConfigHandler langHandler = this.plugin.getLangFile();
-        String messageTemplate = langHandler.getMessage("messages.chat.team-chat")
-                .replace("{TEAM}", team.getTeamName())
-                .replace("{PLAYER}", player.getName())
-                .replace("{MESSAGE}", event.getMessage());
-        Set<UUID> memberSnapshot = team.getMembers(); // unmodifiable view, safe to read
+            event.setCancelled(true);
 
-        // Cancel the public chat event — safe to do from async thread
-        event.setCancelled(true);
-
-        // Dispatch to main thread for all Bukkit API calls
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            for (UUID memberUUID : memberSnapshot) {
-                Player onlinePlayer = Bukkit.getPlayer(memberUUID);
-                if (onlinePlayer != null && onlinePlayer.isOnline()) {
-                    onlinePlayer.sendMessage(messageTemplate);
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (UUID memberUUID : memberSnapshot) {
+                    Player onlinePlayer = Bukkit.getPlayer(memberUUID);
+                    if (onlinePlayer != null && onlinePlayer.isOnline()) {
+                        onlinePlayer.sendMessage(messageTemplate);
+                    }
                 }
-            }
-        });
+            });
+        } else if (team.isAllyChatEnabled(player)) {
+            String messageTemplate = com.vitaldev.vitallibs.util.ChatUtil.color("&d&lALLY CHAT &8| &7[&d" + team.getTeamName() + "&7] &f" + player.getName() + " &8\u00bb &d" + event.getMessage());
+            Set<UUID> memberSnapshot = team.getMembers();
+            Set<UUID> allySnapshot = team.getAllies();
+            
+            event.setCancelled(true);
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                // Send to own team
+                for (UUID memberUUID : memberSnapshot) {
+                    Player onlinePlayer = Bukkit.getPlayer(memberUUID);
+                    if (onlinePlayer != null && onlinePlayer.isOnline()) {
+                        onlinePlayer.sendMessage(messageTemplate);
+                    }
+                }
+                
+                // Send to all allies
+                for (UUID allyUUID : allySnapshot) {
+                    Team allyTeam = Team.getTeam(allyUUID);
+                    if (allyTeam != null) {
+                        for (UUID allyMemberUUID : allyTeam.getMembers()) {
+                            Player onlineAlly = Bukkit.getPlayer(allyMemberUUID);
+                            if (onlineAlly != null && onlineAlly.isOnline()) {
+                                onlineAlly.sendMessage(messageTemplate);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }

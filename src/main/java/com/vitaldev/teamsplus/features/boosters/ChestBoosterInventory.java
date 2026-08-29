@@ -26,12 +26,12 @@ public class ChestBoosterInventory {
     private final InventoryBuilder builder;
     private final List<Integer> emptySlots;
 
-    public ChestBoosterInventory(TeamsPlus plugin, Player player) {
+    public ChestBoosterInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.boosterConfig = plugin.getBoosterManager().getConfig();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
-        this.builder = new InventoryBuilder(boosterConfig.getInt("boosters.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 boosterConfig.getMessage("boosters.menu.title").replace("{TEAM}", team.getTeamName()), true);
         this.emptySlots = boosterConfig.getIntegerList("boosters.menu.empty-slot.slots");
     }
@@ -78,7 +78,7 @@ public class ChestBoosterInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         builder.setCloseButton(closeButton, event -> {

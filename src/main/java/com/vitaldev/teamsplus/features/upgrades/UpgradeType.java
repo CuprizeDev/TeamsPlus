@@ -5,7 +5,8 @@ import com.vitaldev.teamsplus.features.artifacts.ArtifactType;
 public enum UpgradeType {
     DURABILITY(),
     ARTIFACTS(),
-    EXP();
+    EXP(),
+    SPAWNER();
 
 
     public static ArtifactType fromString(String value) {

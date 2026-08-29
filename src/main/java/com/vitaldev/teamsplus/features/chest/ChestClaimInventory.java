@@ -42,15 +42,15 @@ public class ChestClaimInventory {
 
     private Set<Integer> blockedSlots;
 
-    public ChestClaimInventory(TeamsPlus plugin, Player player) {
+    public ChestClaimInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.claimsHandler = plugin.getClaims();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
         int size = claimsHandler.getInt("claims.menu.size");
         this.amount = size;
         this.rows = size / 9;
-        this.builder = new InventoryBuilder(size,
+        this.builder = new InventoryBuilder(54,
                 claimsHandler.getMessage("claims.menu.title").replace("{TEAM}", team.getTeamName()), false);
 
         // Derive chunk coords from chest location without calling getChunk() (avoids chunk load).
@@ -81,7 +81,7 @@ public class ChestClaimInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
     }
 

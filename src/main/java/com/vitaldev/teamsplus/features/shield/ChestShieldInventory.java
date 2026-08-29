@@ -28,13 +28,13 @@ public class ChestShieldInventory {
     private final ShieldManager manager;
     private BukkitTask updateTask;
 
-    public ChestShieldInventory(TeamsPlus plugin, Player player) {
+    public ChestShieldInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.shieldConfig = plugin.getShieldManager().getConfig();
         this.langHandler = plugin.getLangFile();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
-        this.builder = new InventoryBuilder(shieldConfig.getInt("shield.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 shieldConfig.getMessage("shield.menu.title").replace("{TEAM}", team.getTeamName()), true);
         this.manager = plugin.getShieldManager();
     }
@@ -131,7 +131,7 @@ public class ChestShieldInventory {
             if (updateTask != null) {
                 updateTask.cancel();
             }
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         builder.setCloseButton(closeButton, event -> {

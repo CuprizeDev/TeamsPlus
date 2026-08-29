@@ -53,6 +53,12 @@ public class InviteCmd extends SubCmd {
             return;
         }
 
+        int memberLimit = plugin.getConfigFile().getInt("teams.member-limit");
+        if (team.getMembers().size() >= memberLimit && !BypassCmd.isBypassing(player)) {
+            player.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color("&cYour team has reached the maximum member limit of " + memberLimit + "."));
+            return;
+        }
+
         Player target = Bukkit.getPlayer(args[1]);
         if (target != null && target.isOnline()) {
             if (target == player) {

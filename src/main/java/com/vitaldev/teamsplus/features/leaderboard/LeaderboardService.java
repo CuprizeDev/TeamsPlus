@@ -33,7 +33,7 @@ public class LeaderboardService {
     }
 
     public void loadConfig() {
-        ConfigHandler config = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "leaderboard.yml"));
+        ConfigHandler config = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/leaderboard.yml"));
         ignoredWorlds.clear();
         ignoredWorlds.addAll(config.getStringList("leaderboard.settings.ignored-worlds"));
 
@@ -49,7 +49,7 @@ public class LeaderboardService {
     }
 
     private void startScanTimer() {
-        ConfigHandler config = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "leaderboard.yml"));
+        ConfigHandler config = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/leaderboard.yml"));
         long intervalSeconds = config.getLong("leaderboard.settings.scan-interval-seconds");
         long intervalTicks = intervalSeconds * 20L;
 
@@ -62,6 +62,7 @@ public class LeaderboardService {
     }
 
     public void runScan() {
+        if (!plugin.isFeatureEnabled("leaderboard")) return;
         if (isScanning) {
             // Un-stick if something went terribly wrong
             plugin.getLogger().warning("Leaderboard scan overlapped, skipping this cycle.");

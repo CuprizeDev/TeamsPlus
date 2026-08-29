@@ -34,6 +34,13 @@ public class TeamData {
 
         teamData.addProperty("id", team.getTeamUUID().toString());
         teamData.addProperty("name", team.getTeamName());
+        if (team.getDiscordLink() != null) {
+            teamData.addProperty("discordLink", team.getDiscordLink());
+        }
+        
+        teamData.addProperty("recruitmentEnabled", team.isRecruitmentEnabled());
+        teamData.addProperty("teamType", team.getTeamType());
+        teamData.addProperty("lookingFor", team.getLookingFor());
 
         // Ranks
 
@@ -184,6 +191,28 @@ public class TeamData {
         shieldObject.addProperty("activationTime", team.getShieldActivationTime());
         shieldObject.addProperty("cooldownEndTime", team.getShieldCooldownEndTime());
         teamData.add("shield", shieldObject);
+        
+        // Warps
+        JsonObject warpsObject = new JsonObject();
+        for (Map.Entry<String, Location> entry : team.getWarps().entrySet()) {
+            Location loc = entry.getValue();
+            String locString = loc.getWorld().getName() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch();
+            warpsObject.addProperty(entry.getKey(), locString);
+        }
+        teamData.add("warps", warpsObject);
+        
+        // Vault
+        JsonArray vaultArray = new JsonArray();
+        for (int i = 0; i < team.getVault().length; i++) {
+            org.bukkit.inventory.ItemStack item = team.getVault()[i];
+            if (item != null) {
+                JsonObject itemObj = new JsonObject();
+                itemObj.addProperty("slot", i);
+                itemObj.addProperty("data", com.vitaldev.vitallibs.items.ItemSerializer.encodeToBase64(item));
+                vaultArray.add(itemObj);
+            }
+        }
+        teamData.add("vault", vaultArray);
 
         File file = new File(plugin.getDataFolder(), "data/" + team.getTeamUUID().toString() + ".json");
         try (FileWriter writer = new FileWriter(file)) {
@@ -218,7 +247,20 @@ public class TeamData {
             int z = claimChestObject.get("z").getAsInt();
             Location claimChestLocation = new Location(chestWorld, x, y, z);
 
-            return new Team(plugin, teamName, leaderUUID, teamUUID, claimChestLocation);
+                        Team loadedTeam = new Team(plugin, teamName, leaderUUID, teamUUID, claimChestLocation);
+            if (teamData.has("discordLink")) {
+                loadedTeam.setDiscordLink(teamData.get("discordLink").getAsString());
+            }
+            if (teamData.has("recruitmentEnabled")) {
+                loadedTeam.setRecruitmentEnabled(teamData.get("recruitmentEnabled").getAsBoolean());
+            }
+            if (teamData.has("teamType")) {
+                loadedTeam.setTeamType(teamData.get("teamType").getAsString());
+            }
+            if (teamData.has("lookingFor")) {
+                loadedTeam.setLookingFor(teamData.get("lookingFor").getAsString());
+            }
+            return loadedTeam;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -446,6 +488,37 @@ public class TeamData {
         }  catch (IOException e) {
             e.printStackTrace();
         }
+
+        try (FileReader reader = new FileReader(file)) {
+            JsonObject teamData = JsonParser.parseReader(reader).getAsJsonObject();
+            // Warps
+            JsonObject warpsObject = teamData.getAsJsonObject("warps");
+            if (warpsObject != null) {
+                for (Map.Entry<String, JsonElement> entry : warpsObject.entrySet()) {
+                    try {
+                        String[] parts = entry.getValue().getAsString().split(",");
+                        World w = Bukkit.getWorld(parts[0]);
+                        if (w != null) {
+                            Location loc = new Location(w, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]));
+                            team.setWarp(entry.getKey(), loc);
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            // Vault
+            JsonArray vaultArray = teamData.getAsJsonArray("vault");
+            if (vaultArray != null) {
+                for (JsonElement element : vaultArray) {
+                    try {
+                        JsonObject itemObj = element.getAsJsonObject();
+                        int slot = itemObj.get("slot").getAsInt();
+                        org.bukkit.inventory.ItemStack item = com.vitaldev.vitallibs.items.ItemSerializer.decodeFromBase64(itemObj.get("data").getAsString());
+                        team.setVaultItem(slot, item);
+                    } catch (Exception ignored) {}
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private World getWorld(String worldNameOrId) {

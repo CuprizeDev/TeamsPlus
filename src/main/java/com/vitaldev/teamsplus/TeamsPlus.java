@@ -49,11 +49,13 @@ public final class TeamsPlus extends JavaPlugin {
     private ConfigHandler upgrades;
     private ConfigHandler artifacts;
     private ConfigHandler claims;
+    private ConfigHandler discord;
     private ConfigHandler permissions;
     private ConfigHandler logs;
     private ConfigHandler shield;
     private ConfigHandler leaderboard;
     private ConfigHandler stats;
+    private ConfigHandler recruitment;
     private ArtifactManager artifactManager;
     private com.vitaldev.teamsplus.features.stats.StatManager statManager;
     private com.vitaldev.teamsplus.features.artifacts.ArtifactItemBuilder artifactItemBuilder;
@@ -63,7 +65,9 @@ public final class TeamsPlus extends JavaPlugin {
     private ShieldManager shieldManager;
     private LeaderboardCache leaderboardCache;
     private LeaderboardService leaderboardService;
+    private com.vitaldev.teamsplus.features.raiding.RaidManager raidManager;
     private DependencyManager dependencyManager;
+    private com.vitaldev.teamsplus.dependencies.DiscordManager discordManager;
     FileUtil fileUtil = new FileUtil();
     ChestManager chestUtil = new ChestManager(this);
     private final String ADMIN_PERM = "teamsplus.admin.*";
@@ -112,32 +116,40 @@ public final class TeamsPlus extends JavaPlugin {
         // Create Default Files
 
         fileUtil.createFolder(this, "data");
+        fileUtil.createFolder(this, "features");
 
         // YML Files
 
         fileUtil.createYmlFile(this, "lang.yml");
-        fileUtil.createYmlFile(this, "chest.yml");
-        fileUtil.createYmlFile(this, "upgrades.yml");
-        fileUtil.createYmlFile(this, "artifacts.yml");
-        fileUtil.createYmlFile(this, "claims.yml");
-        fileUtil.createYmlFile(this, "permissions.yml");
-        fileUtil.createYmlFile(this, "boosters.yml");
-        fileUtil.createYmlFile(this, "logs.yml");
-        fileUtil.createYmlFile(this, "shield.yml");
-        fileUtil.createYmlFile(this, "leaderboard.yml");
-        fileUtil.createYmlFile(this, "stats.yml");
+        fileUtil.createYmlFile(this, "config.yml");
+        fileUtil.createYmlFile(this, "features/chest.yml");
+        fileUtil.createYmlFile(this, "features/upgrades.yml");
+        fileUtil.createYmlFile(this, "features/artifacts.yml");
+        fileUtil.createYmlFile(this, "features/claims.yml");
+        fileUtil.createYmlFile(this, "features/discord.yml");
+        fileUtil.createYmlFile(this, "features/permissions.yml");
+        fileUtil.createYmlFile(this, "features/boosters.yml");
+        fileUtil.createYmlFile(this, "features/logs.yml");
+        fileUtil.createYmlFile(this, "features/shield.yml");
+        fileUtil.createYmlFile(this, "features/leaderboard.yml");
+        fileUtil.createYmlFile(this, "features/stats.yml");
+        fileUtil.createYmlFile(this, "features/warps.yml");
+        fileUtil.createYmlFile(this, "features/raids.yml");
+        fileUtil.createYmlFile(this, "features/recruitment.yml");
 
         this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
         this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
-        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
-        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
-        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
-        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "claims.yml"));
-        this.permissions = new ConfigHandler(this, fileUtil.getYmlFile(this, "permissions.yml"));
-        this.logs = new ConfigHandler(this, fileUtil.getYmlFile(this, "logs.yml"));
-        this.shield = new ConfigHandler(this, fileUtil.getYmlFile(this, "shield.yml"));
-        this.leaderboard = new ConfigHandler(this, fileUtil.getYmlFile(this, "leaderboard.yml"));
-        this.stats = new ConfigHandler(this, fileUtil.getYmlFile(this, "stats.yml"));
+        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/chest.yml"));
+        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/upgrades.yml"));
+        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/artifacts.yml"));
+        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/claims.yml"));
+        this.discord = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/discord.yml"));
+        this.permissions = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/permissions.yml"));
+        this.logs = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/logs.yml"));
+        this.shield = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/shield.yml"));
+        this.leaderboard = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/leaderboard.yml"));
+        this.stats = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/stats.yml"));
+        this.recruitment = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/recruitment.yml"));
 
         // Artifact Logic
 
@@ -166,6 +178,9 @@ public final class TeamsPlus extends JavaPlugin {
         leaderboardCache = new LeaderboardCache();
         leaderboardService = new LeaderboardService(this, leaderboardCache);
 
+        // Raid Logic
+        raidManager = new com.vitaldev.teamsplus.features.raiding.RaidManager(this);
+
         // Register Commands
 
         TeamCmd teamCommand = new TeamCmd(this,"team", new String[]{"t", "teams", "Team"}, "Main team command", "teamsplus.base", "teamsplus.admin");
@@ -174,8 +189,15 @@ public final class TeamsPlus extends JavaPlugin {
         teamCommand.registerSubCommand(new FindChestCmd(this));
         teamCommand.registerSubCommand(new CreateCmd(this));
         teamCommand.registerSubCommand(new HomeCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.teleport.WarpCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.teleport.SetWarpCmd(this));
         teamCommand.registerSubCommand(new HelpCmd(this));
         teamCommand.registerSubCommand(new InviteCmd(this));
+        teamCommand.registerSubCommand(new InvitesCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.RecruitmentsCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.DiscordCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.SetDiscordCmd(this));
+        
         teamCommand.registerSubCommand(new KickCmd(this));
         teamCommand.registerSubCommand(new JoinCmd(this));
         teamCommand.registerSubCommand(new UninviteCmd(this));
@@ -187,6 +209,7 @@ public final class TeamsPlus extends JavaPlugin {
         teamCommand.registerSubCommand(new LeaderCmd(this));
         teamCommand.registerSubCommand(new LeaveCmd(this));
         teamCommand.registerSubCommand(new ChatCmd(this));
+        teamCommand.registerSubCommand(new AllyChatCmd(this));
         teamCommand.registerSubCommand(new InfoCmd(this));
         teamCommand.registerSubCommand(new ListCmd(this));
         teamCommand.registerSubCommand(new LocationCmd(this));
@@ -195,6 +218,9 @@ public final class TeamsPlus extends JavaPlugin {
         teamCommand.registerSubCommand(new ReloadCmd(this));
         teamCommand.registerSubCommand(new BypassCmd(this));
         teamCommand.registerSubCommand(new StatsCmd(this));
+        teamCommand.registerSubCommand(new com.vitaldev.teamsplus.commands.RaidCmd(this));
+        new com.vitaldev.teamsplus.commands.RaidsBaseCmd(this);
+        
 
         teamCommand.registerSubCommand(new TopCmd(this));
         new ArtifactCmd(this,
@@ -212,18 +238,23 @@ public final class TeamsPlus extends JavaPlugin {
         // Dependencies (Vault, PlaceholderAPI, RoseStacker, DiscordSRV)
 
         dependencyManager = new DependencyManager(this);
+        discordManager = new com.vitaldev.teamsplus.dependencies.DiscordManager(this);
 
         // Register Listeners
 
         getServer().getPluginManager().registerEvents(new TeamChatListener(this), this);
         getServer().getPluginManager().registerEvents(new ChestListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.raiding.RaidTntListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.raiding.RaidSpongeListener(this), this);
         getServer().getPluginManager().registerEvents(new TeamHomeListener(this),this);
+        getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.vault.ChestVaultInventory(this),this);
         getServer().getPluginManager().registerEvents(new PermissionListener(this), this);
         getServer().getPluginManager().registerEvents(new BoosterListener(this), this);
         getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.boosters.listeners.CropListener(this), this);
         getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.boosters.listeners.ExpListener(this), this);
         getServer().getPluginManager().registerEvents(new ShieldListener(this), this);
         getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.stats.StatListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.vitaldev.teamsplus.features.raiding.RaidListener(this), this);
 
         // Register Recipes
 
@@ -299,18 +330,26 @@ public final class TeamsPlus extends JavaPlugin {
     public void reloadConfiguration() {
         this.lang = new ConfigHandler(this, fileUtil.getYmlFile(this, "lang.yml"));
         this.config = new ConfigHandler(this, fileUtil.getYmlFile(this, "config.yml"));
-        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "chest.yml"));
-        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "upgrades.yml"));
-        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "artifacts.yml"));
-        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "claims.yml"));
-        this.permissions = new ConfigHandler(this, fileUtil.getYmlFile(this, "permissions.yml"));
-        this.logs = new ConfigHandler(this, fileUtil.getYmlFile(this, "logs.yml"));
-        this.shield = new ConfigHandler(this, fileUtil.getYmlFile(this, "shield.yml"));
-        this.leaderboard = new ConfigHandler(this, fileUtil.getYmlFile(this, "leaderboard.yml"));
-        this.stats = new ConfigHandler(this, fileUtil.getYmlFile(this, "stats.yml"));
+        this.chest = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/chest.yml"));
+        this.upgrades = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/upgrades.yml"));
+        this.artifacts = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/artifacts.yml"));
+        this.claims = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/claims.yml"));
+        this.discord = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/discord.yml"));
+        this.permissions = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/permissions.yml"));
+        this.logs = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/logs.yml"));
+        this.shield = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/shield.yml"));
+        this.leaderboard = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/leaderboard.yml"));
+        this.stats = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/stats.yml"));
+        this.recruitment = new ConfigHandler(this, fileUtil.getYmlFile(this, "features/recruitment.yml"));
         
         if (this.statManager != null) {
             this.statManager.reload();
+        }
+        if (this.raidManager != null) {
+            this.raidManager.reload();
+        }
+        if (this.discordManager != null) {
+            this.discordManager.reloadTasks();
         }
     }
 
@@ -344,11 +383,36 @@ public final class TeamsPlus extends JavaPlugin {
 
     public LeaderboardCache getLeaderboardCache() { return leaderboardCache; }
     public LeaderboardService getLeaderboardService() { return leaderboardService; }
+    public com.vitaldev.teamsplus.features.raiding.RaidManager getRaidManager() { return raidManager; }
 
     public DependencyManager getDependencyManager() { return dependencyManager; }
+    public com.vitaldev.teamsplus.dependencies.DiscordManager getDiscordManager() { return discordManager; }
 
     public ConfigHandler getLangFile() {
         return this.lang;
+    }
+
+    public boolean isFeatureEnabled(String feature) {
+        ConfigHandler handler = null;
+        switch (feature.toLowerCase()) {
+            case "artifacts": handler = artifacts; break;
+            case "boosters": handler = boosterManager != null ? boosterManager.getConfig() : null; break;
+            case "claims": handler = claims; break;
+            case "leaderboard": handler = leaderboard; break;
+            case "logs": handler = logManager != null ? logManager.getConfig() : null; break;
+            case "discord": handler = discord; break;
+            case "permissions": handler = permissions; break;
+            case "shield": handler = shieldManager != null ? shieldManager.getConfig() : null; break;
+            case "stats": handler = stats; break;
+            case "recruitment": handler = recruitment; break;
+            case "upgrades": handler = upgrades; break;
+            case "warps": handler = new ConfigHandler(this, new com.vitaldev.vitallibs.util.FileUtil().getYmlFile(this, "features/warps.yml")); break;
+            case "raids": handler = raidManager != null ? raidManager.getConfig() : null; break;
+        }
+        if (handler != null) {
+            return handler.getBoolean(feature.toLowerCase() + ".settings.enabled");
+        }
+        return true;
     }
 
     public ConfigHandler getConfigFile() {
@@ -367,11 +431,14 @@ public final class TeamsPlus extends JavaPlugin {
 
     public ConfigHandler getLogsFile() { return this.logs; }
 
+    public ConfigHandler getDiscordFile() { return this.discord; }
+
     public ConfigHandler getShieldFile() { return this.shield; }
 
     public ConfigHandler getLeaderboardFile() { return this.leaderboard; }
 
     public ConfigHandler getStatsFile() { return this.stats; }
+    public ConfigHandler getRecruitmentFile() { return this.recruitment; }
 
     public String getAdminPermission() {
         return this.ADMIN_PERM;

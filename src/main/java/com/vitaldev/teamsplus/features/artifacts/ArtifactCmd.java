@@ -19,14 +19,28 @@ public class ArtifactCmd extends CommandBuilder {
     @Override
     protected void execute(CommandSender sender, String[] args) {
 
-        ConfigHandler langHandler = plugin.getLangFile();
+        ConfigHandler langHandler = this.plugin.getLangFile();
+
+        if (!plugin.isFeatureEnabled("artifacts")) {
+            sender.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color("&cThe artifacts feature is currently disabled."));
+            return;
+        }
+
+        if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
+            if (sender instanceof Player player) {
+                new ArtifactListInventory(plugin, player).openInventory();
+            } else {
+                sender.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color("&cOnly players can open the artifacts list GUI."));
+            }
+            return;
+        }
 
         if (!CommandUtil.validateArgsLength(sender,
                 args,
-                2,
+                3,
                 langHandler.getString("messages.invalid-args")
-                        .replace("{ARGS}", "give <player>")
-                        .replace("{COMMAND}", "sword"))) {
+                        .replace("{ARGS}", "give <player> <type>")
+                        .replace("{COMMAND}", "artifact"))) {
             return;
         }
 

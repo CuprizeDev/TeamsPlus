@@ -1,20 +1,27 @@
 package com.vitaldev.teamsplus.features.artifacts;
 
 public enum ArtifactType {
-    HASTE,
-    LOOTING,
-    SMELTER,
-    VERDANT,
-    SENTRY,
-    BLOOM_STONE,
-    BEAST_BANE,
-    BEACON,
-    BEAST_FORGE,
+    ADRENALINE,
     AERIAL,
+    ARACHNID,
+    BEACON,
+    BEAST_BANE,
+    BEAST_FORGE,
+    BLAST_SHIELD,
+    BLOODHOUND,
+    BLOOM_STONE,
+    GRAVITY,
+    HASTE,
     INQUISITIVE,
-    HARVESTER,
-    SANCTUARY,
-    WARDEN;
+    RADAR,
+    REPULSOR,
+    SMELTER,
+    TOXIC_AURA,
+    TRUE_SIGHT,
+    VAMPIRIC,
+    VERDANT,
+    VITALITY,
+    WAR_HORN;
 
     public static ArtifactType fromString(String value) {
         if (value == null) {

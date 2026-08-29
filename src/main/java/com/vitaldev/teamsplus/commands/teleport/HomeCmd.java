@@ -46,7 +46,7 @@ public class HomeCmd extends SubCmd {
             return;
         }
 
-        int cooldown = plugin.getConfig().getInt("teams.cooldowns.home");
+        int cooldown = plugin.getConfigFile().getInt("teams.cooldowns.home");
         Location claimChestLocation = Team.getTeam(player).getClaimChest().clone();
         claimChestLocation.setX(claimChestLocation.getBlockX() + 0.5);
         claimChestLocation.setZ(claimChestLocation.getBlockZ() + 0.5);

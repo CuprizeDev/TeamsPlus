@@ -29,13 +29,13 @@ public class ChestArtifactInventory {
     private final ArtifactManager artifactManager;
     private ItemStack emptyItem;
 
-    public ChestArtifactInventory(TeamsPlus plugin, Player player) {
+    public ChestArtifactInventory(TeamsPlus plugin, Player player, Team team) {
             this.plugin = plugin;
             this.artifactHandler = plugin.getArtifacts();
             this.langHandler = plugin.getLangFile();
-            this.team = Team.getTeam(player);
+            this.team = team;
             this.player = player;
-            this.builder = new InventoryBuilder(artifactHandler.getInt("artifacts.menu.size"),
+            this.builder = new InventoryBuilder(54,
                     artifactHandler.getMessage("artifacts.menu.title").replace("{TEAM}", team.getTeamName()), true);
             this.artifactManager = plugin.getArtifactManager();
     }
@@ -83,7 +83,7 @@ public class ChestArtifactInventory {
 
         builder.setBackButton(backButton, event -> {
             event.setCancelled(true);
-            new ChestMenuInventory(plugin, player).openInventory();
+            new ChestMenuInventory(plugin, player, team).openInventory();
         });
 
         builder.setCloseButton(closeButton, event -> {

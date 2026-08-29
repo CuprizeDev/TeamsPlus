@@ -6,6 +6,7 @@ import com.vitaldev.teamsplus.features.boosters.ChestBoosterInventory;
 import com.vitaldev.teamsplus.features.logs.ChestLogMenuInventory;
 import com.vitaldev.teamsplus.features.permissions.ChestPermissionInventory;
 import com.vitaldev.teamsplus.features.shield.ChestShieldInventory;
+import com.vitaldev.teamsplus.features.chest.ChestInvitesInventory;
 import com.vitaldev.teamsplus.features.stats.ChestStatMenuInventory;
 import com.vitaldev.teamsplus.features.stats.ChestTeamStatsInventory;
 import com.vitaldev.teamsplus.features.upgrades.ChestUpgradeInventory;
@@ -27,12 +28,12 @@ public class ChestMenuInventory {
     private final Player player;
     private final InventoryBuilder builder;
 
-    public ChestMenuInventory(TeamsPlus plugin, Player player) {
+    public ChestMenuInventory(TeamsPlus plugin, Player player, Team team) {
         this.plugin = plugin;
         this.chestHandler = plugin.getChestFile();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
-        this.builder = new InventoryBuilder(chestHandler.getInt("chest.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 chestHandler.getMessage("chest.menu.title").replace("{TEAM}", team.getTeamName()), false);
     }
 
@@ -79,6 +80,10 @@ public class ChestMenuInventory {
         String itemPath;
 
         for (String item : chestHandler.getConfigurationSection("chest.menu.items").getKeys(false)) {
+            if (!plugin.isFeatureEnabled(item)) {
+                continue;
+            }
+
             itemPath = "chest.menu.items." + item;
 
             ItemStack itemStack = ItemHandler.buildItem(
@@ -92,35 +97,55 @@ public class ChestMenuInventory {
             builder.addItem(chestHandler.getInt(itemPath + ".slot"), itemStack, inventoryClickEvent -> {
 
                 if (item.equals("artifacts")) {
-                    new ChestArtifactInventory(plugin, player).openInventory();
+                    new ChestArtifactInventory(plugin, player, team).openInventory();
+                }
+
+                if (item.equals("invites")) {
+                    new ChestInvitesInventory(plugin, player, team).openInventory();
+                }
+                
+                if (item.equals("recruitment")) {
+                    new com.vitaldev.teamsplus.features.chest.ChestRecruitmentInventory(plugin, player, team).openInventory();
+                }
+
+                if (item.equals("alliances")) {
+                    new com.vitaldev.teamsplus.features.chest.ChestAlliancesInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("upgrades")) {
-                    new ChestUpgradeInventory(plugin, player).openInventory();
+                    new ChestUpgradeInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("shield")) {
-                    new ChestShieldInventory(plugin, player).openInventory();
+                    new ChestShieldInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("permissions")) {
-                    new ChestPermissionInventory(plugin, player).openInventory();
+                    new ChestPermissionInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("logs")) {
-                    new ChestLogMenuInventory(plugin, player).openInventory();
+                    new ChestLogMenuInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("boosts")) {
-                    new ChestBoosterInventory(plugin, player).openInventory();
+                    new ChestBoosterInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("claims")) {
-                    new ChestClaimInventory(plugin, player).openInventory();
+                    new ChestClaimInventory(plugin, player, team).openInventory();
                 }
 
                 if (item.equals("stats")) {
-                    new ChestTeamStatsInventory(plugin, player).openInventory();
+                    new ChestTeamStatsInventory(plugin, player, team).openInventory();
+                }
+
+                if (item.equals("vault")) {
+                    new com.vitaldev.teamsplus.features.vault.ChestVaultInventory(plugin).openVault(player, team);
+                }
+
+                if (item.equals("warps")) {
+                    new com.vitaldev.teamsplus.features.teleport.ChestWarpInventory(plugin, player).openInventory();
                 }
 
             });

@@ -23,6 +23,11 @@ public class TopCmd extends SubCmd {
     public void execute(CommandSender sender, String[] args) {
         ConfigHandler langHandler = this.plugin.getLangFile();
 
+        if (!plugin.isFeatureEnabled("leaderboard")) {
+            sender.sendMessage(com.vitaldev.vitallibs.util.ChatUtil.color("&cThe leaderboard feature is currently disabled."));
+            return;
+        }
+
         if (!(sender instanceof Player)) {
             ConsoleUtil.sendMessage(langHandler.getMessage("messages.only-players"));
             return;

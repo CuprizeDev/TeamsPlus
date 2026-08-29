@@ -36,8 +36,10 @@ public class Team {
     private final Set<UUID> allies;
     private final Set<UUID> allyRequests;
     private final Set<ClaimKey> claims;
+    private String discordLink;
     public Map<UUID, PlayerRank> playerRanks = new HashMap<>();
     public Map<UUID, Boolean> teamChat = new HashMap<>();
+    public Map<UUID, Boolean> allyChat = new HashMap<>();
     private final Hologram hologram;
     private final List<UUID> invites = new LinkedList<>();
     private final UUID uuid;
@@ -52,6 +54,9 @@ public class Team {
     private long shieldChargeSeconds = 0;
     private boolean autoShieldEnabled = false;
     private boolean shieldDeploying = false;
+    private boolean recruitmentEnabled = false;
+    private String teamType = "CASUAL";
+    private String lookingFor = "ANY";
     private long shieldDeployStartTime = 0;
     private boolean shieldManualDeploy = false;
     private boolean shieldActive = false;
@@ -65,6 +70,8 @@ public class Team {
     // permissions[rank][action] = allowed
     private final Map<PlayerRank, Map<PermissableAction, Boolean>> permissions = new EnumMap<>(PlayerRank.class);
     int durability;
+    private final Map<String, Location> warps = new HashMap<>();
+    private final org.bukkit.inventory.ItemStack[] vault = new org.bukkit.inventory.ItemStack[54];
 
     public Team(TeamsPlus plugin, String teamName, UUID leader, UUID uuid, Location claimChestLocation) {
         this.teamName = teamName;
@@ -82,6 +89,7 @@ public class Team {
         upgrades.put(UpgradeType.EXP, 0);
         upgrades.put(UpgradeType.ARTIFACTS, 0);
         upgrades.put(UpgradeType.DURABILITY, 0);
+        upgrades.put(UpgradeType.SPAWNER, 0);
 
         durability = getUpgradeEffect(UpgradeType.DURABILITY);
 
@@ -89,10 +97,11 @@ public class Team {
         initDefaultPermissions(plugin.getPermissionsFile());
 
        if (DHAPI.getHologram(uuid.toString()) != null) {
-           removeHologram();
+           DHAPI.removeHologram(uuid.toString());
        }
 
         this.hologram = new Hologram(uuid.toString(), getClaimChest().add(0.5, 2.5, 0.5));
+        this.hologram.setSaveToFile(false);
 
         // Cache templates once — reused in updateHologram() without re-reading config.
         this.hologramTemplates = configHandler.getColoredList("teams.chest.hologram");
@@ -151,6 +160,38 @@ public class Team {
         }
 
         return Relation.ENEMY;
+    }
+    
+    public Map<String, Location> getWarps() {
+        return warps;
+    }
+    
+    public Location getWarp(String name) {
+        return warps.get(name.toLowerCase());
+    }
+    
+    public void setWarp(String name, Location location) {
+        warps.put(name.toLowerCase(), location);
+    }
+    
+    public void removeWarp(String name) {
+        warps.remove(name.toLowerCase());
+    }
+    
+    public org.bukkit.inventory.ItemStack[] getVault() {
+        return vault;
+    }
+    
+    public void setVaultItem(int slot, org.bukkit.inventory.ItemStack item) {
+        if (slot >= 0 && slot < vault.length) {
+            vault[slot] = item;
+        }
+    }
+    
+    public void setVault(org.bukkit.inventory.ItemStack[] contents) {
+        for (int i = 0; i < Math.min(contents.length, vault.length); i++) {
+            vault[i] = contents[i];
+        }
     }
 
     // Artifacts
@@ -516,8 +557,12 @@ public class Team {
     }
 
     public void removeMember(Player player) {
-        members.remove(player.getUniqueId());
-        allPlayerTeams.remove(player.getUniqueId());
+        removeMember(player.getUniqueId());
+    }
+
+    public void removeMember(UUID playerUUID) {
+        members.remove(playerUUID);
+        allPlayerTeams.remove(playerUUID);
     }
 
     public Set<UUID> getMembers() {
@@ -578,6 +623,22 @@ public class Team {
 
     public void setTeamChat(UUID playerUUID, Boolean toggle) {
         teamChat.put(playerUUID, toggle);
+    }
+
+    public boolean isAllyChatEnabled(Player player) {
+        return allyChat.getOrDefault(player.getUniqueId(), false);
+    }
+
+    public boolean isAllyChatEnabled(UUID playerUUID) {
+        return allyChat.getOrDefault(playerUUID, false);
+    }
+
+    public void setAllyChat(Player player, Boolean toggle) {
+        allyChat.put(player.getUniqueId(), toggle);
+    }
+
+    public void setAllyChat(UUID playerUUID, Boolean toggle) {
+        allyChat.put(playerUUID, toggle);
     }
 
     // Ranks
@@ -703,6 +764,38 @@ public class Team {
 
     public String getTeamName() {
         return teamName;
+    }
+
+    public String getDiscordLink() {
+        return discordLink;
+    }
+
+    public void setDiscordLink(String discordLink) {
+        this.discordLink = discordLink;
+    }
+
+    public boolean isRecruitmentEnabled() {
+        return recruitmentEnabled;
+    }
+
+    public void setRecruitmentEnabled(boolean recruitmentEnabled) {
+        this.recruitmentEnabled = recruitmentEnabled;
+    }
+
+    public String getTeamType() {
+        return teamType;
+    }
+
+    public void setTeamType(String teamType) {
+        this.teamType = teamType;
+    }
+
+    public String getLookingFor() {
+        return lookingFor;
+    }
+
+    public void setLookingFor(String lookingFor) {
+        this.lookingFor = lookingFor;
     }
 
     public UUID getTeamUUID() {
@@ -920,6 +1013,10 @@ public class Team {
 
     public static void removePlayerFromTeam(Player player) {
         allPlayerTeams.remove(player.getUniqueId());
+    }
+
+        public static Team getTeamByPlayerUUID(UUID playerUUID) {
+        return getTeam(allPlayerTeams.get(playerUUID));
     }
 
     public static Team getTeam(Player player) {

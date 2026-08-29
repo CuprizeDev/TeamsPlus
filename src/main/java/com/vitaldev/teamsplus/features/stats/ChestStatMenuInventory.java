@@ -31,7 +31,7 @@ public class ChestStatMenuInventory {
         this.targetUUID = target.getUniqueId();
         this.statConfig = plugin.getStatsFile();
         
-        this.builder = new InventoryBuilder(statConfig.getInt("stats.menu.size"),
+        this.builder = new InventoryBuilder(54,
                 statConfig.getMessage("stats.menu.title")
                         .replace("{PLAYER}", target.getName() != null ? target.getName() : "Unknown"), true);
     }
@@ -86,7 +86,7 @@ public class ChestStatMenuInventory {
 
             builder.setBackButton(backButton, event -> {
                 event.setCancelled(true);
-                new ChestTeamStatsInventory(plugin, viewer).openInventory();
+                new ChestTeamStatsInventory(plugin, viewer, com.vitaldev.teamsplus.model.Team.getTeamByPlayerUUID(target.getUniqueId())).openInventory();
             });
         }
 

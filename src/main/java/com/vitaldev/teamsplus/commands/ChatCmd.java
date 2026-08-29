@@ -41,6 +41,9 @@ public class ChatCmd extends SubCmd {
             player.sendMessage(langHandler.getMessage("messages.chat.disabled"));
         } else {
             team.setTeamChat(player, true);
+            if (team.isAllyChatEnabled(player)) {
+                team.setAllyChat(player, false);
+            }
             player.sendMessage(langHandler.getMessage("messages.chat.enabled"));        }
     }
 }

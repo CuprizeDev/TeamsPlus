@@ -51,7 +51,7 @@ public class JoinCmd extends SubCmd {
             if (team.getTeamName().equalsIgnoreCase(teamName)) {
                 if (team.isInvited(player)) {
 
-                    if (team.getMemberCount() >= this.plugin.getConfig().getInt("teams.member-limit")) {
+                    if (team.getMemberCount() >= this.plugin.getConfigFile().getInt("teams.member-limit")) {
                         player.sendMessage(langHandler.getMessage("messages.join.maximum-members"));
                         return;
                     }

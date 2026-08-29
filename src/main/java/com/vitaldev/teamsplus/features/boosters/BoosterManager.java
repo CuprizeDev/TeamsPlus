@@ -24,7 +24,7 @@ public class BoosterManager {
 
     public BoosterManager(TeamsPlus plugin) {
         this.plugin = plugin;
-        this.boosterConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "boosters.yml"));
+        this.boosterConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/boosters.yml"));
         this.nbtHandler = new NBTHandler(plugin);
         
         loadDefinitions();
@@ -59,7 +59,7 @@ public class BoosterManager {
     }
 
     public void reload() {
-        this.boosterConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "boosters.yml"));
+        this.boosterConfig = new ConfigHandler(plugin, new FileUtil().getYmlFile(plugin, "features/boosters.yml"));
         loadDefinitions();
     }
 

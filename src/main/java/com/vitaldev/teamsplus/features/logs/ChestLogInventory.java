@@ -39,14 +39,14 @@ public class ChestLogInventory {
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private int page = 0;
 
-    public ChestLogInventory(TeamsPlus plugin, Player player, LogType logType) {
+    public ChestLogInventory(TeamsPlus plugin, Player player, Team team, LogType logType) {
         this.plugin = plugin;
         this.logConfig = plugin.getLogManager().getConfig();
         this.langHandler = plugin.getLangFile();
-        this.team = Team.getTeam(player);
+        this.team = team;
         this.player = player;
         this.logType = logType;
-        this.builder = new InventoryBuilder(logConfig.getInt("logs.menu-logs.size"),
+        this.builder = new InventoryBuilder(54,
                 logConfig.getMessage("logs.menu-logs.title").replace("{TEAM}", team.getTeamName()), true);
     }
 
@@ -93,7 +93,7 @@ public class ChestLogInventory {
 
         builder.addItem(backSlot, backBtn, event -> {
             event.setCancelled(true);
-            new ChestLogMenuInventory(plugin, player).openInventory();
+            new ChestLogMenuInventory(plugin, player, team).openInventory();
         });
 
         if (page > 0) {
